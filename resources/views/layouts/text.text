@@ -1,0 +1,83 @@
+            // $(window).on('load', function() {
+            //     setTimeout(function() {
+            //         $('#loading-box').fadeOut();
+            //         setTimeout(function() {
+            //             @if(session('success'))
+            //             Swal.fire({
+            //                 icon: "success",
+            //                 title: "Success...",
+            //                 text: "{{ session('success') }}",
+            //                 showConfirmButton: false,
+            //                 timer: 2500
+            //             });
+            //             @endif
+
+            //             @if(session('error'))
+            //             Swal.fire({
+            //                 icon: "error",
+            //                 title: "Oops...",
+            //                 text: "{{ session('error') }}",
+            //                 showConfirmButton: false,
+            //                 timer: 2500
+            //             });
+            //             @endif
+            //         }, 1000);
+            //     }, TIMEOUT_1);
+            // });
+
+
+            // $('#btnGenerateTable').click(function() {
+            //     Swal.fire({
+            //         title: "Are you sure?",
+            //         text: "You want to create all the tables",
+            //         icon: "warning",
+            //         showCancelButton: true,
+            //         confirmButtonColor: "#3085d6",
+            //         cancelButtonColor: "#d33",
+            //         confirmButtonText: "Yes, make it!"
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             Swal.fire({
+            //                 title: 'Creating Tables...',
+            //                 html: "Don't refresh this page, Please wait...",
+            //                 allowEscapeKey: false,
+            //                 allowOutsideClick: false,
+            //                 didOpen: () => {
+            //                     Swal.showLoading()
+            //                 }
+            //             });
+
+            //             // Mengarahkan pengguna ke halaman yang sesuai
+            //             window.location.href = "{{ route('process.table') }}";
+            //         }
+            //     });
+            //     $('.swal2-cancel').css('margin-left', '10px');
+            // });
+
+            // $('#btnSyncData').click(function() {
+            //     Swal.fire({
+            //         title: "Are you sure?",
+            //         text: "To synchronize data?",
+            //         icon: "warning",
+            //         showCancelButton: true,
+            //         confirmButtonColor: "#3085d6",
+            //         cancelButtonColor: "#d33",
+            //         confirmButtonText: "Yes, sync!"
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             Swal.fire({
+            //                 title: 'Data Synchronization...',
+            //                 html: "Don't refresh this page, Please wait...",
+            //                 allowEscapeKey: false,
+            //                 allowOutsideClick: false,
+            //                 didOpen: () => {
+            //                     Swal.showLoading()
+            //                 }
+            //             });
+
+            //             // Mengarahkan pengguna ke halaman yang sesuai
+            //             window.location.href = "{{ route('process.synchronize') }}";
+            //         }
+            //     });
+            //     $('.swal2-cancel').css('margin-left', '10px');
+            // });
