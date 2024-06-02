@@ -16,7 +16,7 @@
             <h3>User not logged in</h3>
         @endif
         <div class="wrapper-btn-header-right ">
-            <a href="{{ route('process.synchronizeTEST') }}">TEST CONTROLLER SYNC</a>
+            <a href="{{ route('process.synchronizeTEST') }}">TEST CONTROLLER SYNC TEST</a>
         </div>
     </div>
     <div class="page-content">
