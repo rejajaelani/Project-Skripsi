@@ -66,54 +66,21 @@
                                 <li class="submenu-item ">
                                     <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
                                             class="bi bi-circle mb-2"></i><span>Data
-                                            KHS</span></a>
+                                            Aktivitas Mahasiswa</span></a>
                                 </li>
                                 <li class="submenu-item ">
                                     <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
                                             class="bi bi-circle mb-2"></i><span>Data
-                                            AKM</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            DO</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            Nilai IPK</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            Nilai MK</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            KP</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            Seminar</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            TA</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            Beban SKS</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            Kelulusan</span></a>
+                                            Kelulusan dan DO</span></a>
                                 </li>
                             </ul>
+                        </li>
+
+                        <li class="sidebar-item ">
+                            <a href="#" class='sidebar-link'>
+                                <i class="bi bi-bookmarks-fill"></i>
+                                <span>Data Kelas Perkuliahan</span>
+                            </a>
                         </li>
 
                         <li class="sidebar-item ">

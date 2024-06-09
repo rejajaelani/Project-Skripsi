@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DataProcessController;
+use App\Http\Controllers\DataVisualisasiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -26,14 +27,16 @@ Route::middleware(['auth'])->group(function () {
         return view('user');
     });
 
-    Route::get('/dashboard', function () {
-        $data = [
-            'pages_active' => 'dashboard',
-            'isActiveMenu' => false
-        ];
+    // Route::get('/dashboard', function () {
+    //     $data = [
+    //         'pages_active' => 'dashboard',
+    //         'isActiveMenu' => false
+    //     ];
 
-        return view('dashboard', $data);
-    })->name('dashboard');
+    //     return view('dashboard', $data);
+    // })->name('dashboard');
+
+    Route::get('/dashboard', [DataVisualisasiController::class, 'DashboardVisualisasi'])->name('dashboard');
 
     Route::get('/data-krs', function () {
         $data = [
@@ -55,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Test Generate auto table link
     Route::get('/generate-table', [DataProcessController::class, 'generateTable'])->name('process.table');
-    Route::get('/synchronize-data', [DataProcessController::class, 'synchronizeData_test1'])->name('process.synchronizeTEST');
+    Route::get('/synchronize-data', [DataProcessController::class, 'synchronizeData_test1_1'])->name('process.synchronizeTEST');
 });
 
 // Route::get('/dashboard', function () {

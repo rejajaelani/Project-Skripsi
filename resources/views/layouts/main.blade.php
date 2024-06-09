@@ -51,6 +51,14 @@
 
         <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
 
+        <?php 
+            if ($pages_active == 'dashboard') {
+        ?>
+        <script src="{{ asset('js/dataCharts.js') }}"></script>
+        <?php
+            }
+        ?>
+
         {{-- Data Table --}}
         <script src="https://cdn.datatables.net/v/bs5/dt-1.12.1/datatables.min.js"></script>
         <script src="{{ asset('assets/js/pages/datatables.js') }}"></script>

@@ -321,7 +321,7 @@ class DataProcessController extends Controller
     public function synchronizeData_test1()
     {
         // Set waktu maksimum eksekusi
-        ini_set('max_execution_time', 3000);
+        ini_set('max_execution_time', 300000);
 
         // Mendapatkan token
         $tokenResponse = $this->token();
@@ -332,11 +332,11 @@ class DataProcessController extends Controller
             // Mengambil token dari response
             $feeder_token = $tokenResponse->data->token;
 
-            $name_testget = "GetBiodataMahasiswa"; //<--- BARU SAMPAI DATA INI SYNCNYA
+            $name_testget = "GetListMahasiswa";
             // Membuat data untuk request
             $sync['act'] = $name_testget;
             $sync['token'] = $feeder_token;
-            $sync['filter'] = "";
+            $sync['filter'] = "id_periode = '20231'";
             $sync['order'] = "";
             $sync['limit'] = "";
             $sync['offset'] = "";
@@ -365,6 +365,75 @@ class DataProcessController extends Controller
             return Redirect::route('dashboard')->with('status', 'success');
         } else {
             return Redirect::route('dashboard')->with('error', 'The token is failed');
+        }
+    }
+
+    public function synchronizeData_test1_1()
+    {
+        try {
+            // Set waktu maksimum eksekusi
+            ini_set('max_execution_time', 300000);
+
+            // Mendapatkan token
+            $tokenResponse = $this->token();
+
+            // Memeriksa apakah token berhasil diperoleh
+            if (isset($tokenResponse->data->token)) {
+                // Mengambil token dari response
+                $feeder_token = $tokenResponse->data->token;
+
+                // Membuat data untuk request
+                $sync['act'] = 'GetListMahasiswa';
+                $sync['token'] = $feeder_token;
+                $sync['filter'] = "";
+                $sync['order'] = "";
+                $sync['limit'] = 1000; // Atur batasan jumlah data per permintaan
+                $sync['offset'] = 0; // Mulai dari offset 0
+
+                $tableName = "tb" . $sync['act'];
+
+                do {
+                    // Memanggil WS untuk mendapatkan data
+                    $hasil = $this->runWs($sync);
+
+                    // Mendekode hasil JSON ke dalam array
+                    $array = json_decode($hasil, true);
+
+                    if (empty($array['data'])) {
+                        // Jika tidak ada data, hentikan perulangan dan kembalikan respons
+                        $response = [
+                            "name_table" => 'GetListMahasiswa',
+                            "status" => "success"
+                        ];
+                        return response()->json(['data' => $response], 200);
+                    } else {
+                        // Menyimpan data ke dalam tabel
+                        if (isset($array['data']) && is_array($array['data'])) {
+                            foreach ($array['data'] as $data) {
+                                DB::table($tableName)->insert($data);
+                            }
+                        }
+                    }
+
+                    // Update offset untuk permintaan berikutnya
+                    $sync['offset'] += $sync['limit'];
+                } while (!empty($array['data']));
+            } else {
+                $response = [
+                    "name_table" => 'GetListMahasiswa',
+                    "status" => "The token is failed"
+                ];
+                return response()->json(['data' => $response], 400);
+            }
+        } catch (\Exception $e) {
+            // Log eksepsi
+            \Log::error('Error in synchronizeData: ' . $e->getMessage());
+            // Berikan respons kesalahan yang umum
+            $response = [
+                "name_table" => 'GetListMahasiswa',
+                "status" => "Internal Server Error"
+            ];
+            return response()->json(['data' => $response], 500);
         }
     }
 
@@ -603,7 +672,7 @@ class DataProcessController extends Controller
                 }
 
                 // //untuk menghapus semua data pada tabel tanpa detect is_tabel_master
-                //DB::table($tableName)->truncate();
+                // DB::table($tableName)->truncate();
 
                 //Menyimpan data ke dalam tabel
                 if (isset($array['data']) && is_array($array['data'])) {

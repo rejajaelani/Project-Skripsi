@@ -213,7 +213,7 @@
                     "GetDetailKelasKuliah", "GetListPeriodePerkuliahan", "GetDetailPeriodePerkuliahan",
                     "GetListDosen", "GetRekapJumlahDosen", "GetListPenugasanDosen",
                     "GetRekapJumlahMahasiswa", "GetDataTerhapus", "GetListMataKuliah",
-                    "GetDetailMataKuliah", "GetBiodataMahasiswa", "GetRiwayatPendidikanDosen",
+                    "GetDetailMataKuliah", "GetBiodataMahasiswa",
                     "GetPerhitunganSKS", "GetListPrestasiMahasiswa", "GetDosenPembimbing"
                 ];
 
