@@ -90,19 +90,21 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item {{ $pages_active == 'user' ? 'active' : '' }}">
-                            <a href="{{ route('user') }}" class='sidebar-link'>
-                                <i class="bi bi-person-lines-fill"></i>
-                                <span>Data User</span>
-                            </a>
-                        </li>
+                        @if ($HakAkses == 'Admin' || $HakAkses == 'Rektor')
+                            <li class="sidebar-item {{ $pages_active == 'user' ? 'active' : '' }}">
+                                <a href="{{ route('user') }}" class='sidebar-link'>
+                                    <i class="bi bi-person-lines-fill"></i>
+                                    <span>Data User</span>
+                                </a>
+                            </li>
 
-                        <li class="sidebar-item {{ $pages_active == 'data-sync' ? 'active' : '' }}">
-                            <a href="{{ route('data-sync') }}" class='sidebar-link'>
-                                <i class="bi bi-airplane-fill"></i>
-                                <span>Data Synchronization</span>
-                            </a>
-                        </li>
+                            <li class="sidebar-item {{ $pages_active == 'data-sync' ? 'active' : '' }}">
+                                <a href="{{ route('data-sync') }}" class='sidebar-link'>
+                                    <i class="bi bi-airplane-fill"></i>
+                                    <span>Data Synchronization</span>
+                                </a>
+                            </li>
+                        @endif
 
                     </ul>
                 </div>

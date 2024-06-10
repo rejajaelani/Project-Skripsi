@@ -35,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DataVisualisasiController::class, 'Visualisasi_Dashboard'])->name('dashboard');
     Route::get('/user', [DataVisualisasiController::class, 'Visualisasi_User'])->name('user');
+    Route::get('/data-sync', [DataVisualisasiController::class, 'Visualisasi_DataSync'])->name('data-sync');
 
     Route::post('/user/add-update', [DataUserController::class, 'addUpdate'])->name('user.add-update');
     Route::post('/user/delete', [DataUserController::class, 'delete'])->name('user.delete');
@@ -47,15 +48,6 @@ Route::middleware(['auth'])->group(function () {
 
         return view('pages/data-krs', $data);
     })->name('data-krs');
-
-    Route::get('/data-sync', function () {
-        $data = [
-            'pages_active' => 'data-sync',
-            'isActiveMenu' => false
-        ];
-
-        return view('pages/data-sync', $data);
-    })->name('data-sync');
 
     // Test Generate auto table link
     Route::get('/generate-table', [DataProcessController::class, 'generateTable'])->name('process.table');
