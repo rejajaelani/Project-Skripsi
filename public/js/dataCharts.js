@@ -115,75 +115,65 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("No data found in data attribute.");
     }
 
-    var optionsEurope = {
-        series: [
-            {
-                name: "series1",
-                data: [
-                    310, 800, 600, 430, 540, 340, 605, 805, 430, 540, 340, 605,
-                ],
-            },
-        ],
-        chart: {
-            height: 80,
-            type: "area",
-            toolbar: {
-                show: false,
-            },
-        },
-        colors: ["#5350e9"],
-        stroke: {
-            width: 2,
-        },
-        grid: {
-            show: false,
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        xaxis: {
-            type: "datetime",
-            categories: [
-                "2018-09-19T00:00:00.000Z",
-                "2018-09-19T01:30:00.000Z",
-                "2018-09-19T02:30:00.000Z",
-                "2018-09-19T03:30:00.000Z",
-                "2018-09-19T04:30:00.000Z",
-                "2018-09-19T05:30:00.000Z",
-                "2018-09-19T06:30:00.000Z",
-                "2018-09-19T07:30:00.000Z",
-                "2018-09-19T08:30:00.000Z",
-                "2018-09-19T09:30:00.000Z",
-                "2018-09-19T10:30:00.000Z",
-                "2018-09-19T11:30:00.000Z",
-            ],
-            axisBorder: {
-                show: false,
-            },
-            axisTicks: {
-                show: false,
-            },
-            labels: {
-                show: false,
-            },
-        },
-        show: false,
-        yaxis: {
-            labels: {
-                show: false,
-            },
-        },
-        tooltip: {
-            x: {
-                format: "dd/MM/yy HH:mm",
-            },
-        },
-    };
 
-    var chartEurope = new ApexCharts(
-        document.querySelector("#chart-europe"),
-        optionsEurope
-    );
+    var elements = document.querySelectorAll("[id^='prodi-chart-']");
+    
+    elements.forEach(function (element) {
+        var dataAttribute = element.getAttribute("data-jum-mhs-per-prodi");
 
-    chartEurope.render();
+        if (dataAttribute) {
+            try {
+                var JumMhsPerProdi = JSON.parse(dataAttribute);
+
+                var years = JumMhsPerProdi.map((data) => data.Tahun);
+                var mahasiswaAktif = JumMhsPerProdi.map((data) => data.Total_Mahasiswa_Aktif);
+                var mahasiswaCuti = JumMhsPerProdi.map((data) => data.Total_Mahasiswa_Cuti);
+                var mahasiswaNonAktif = JumMhsPerProdi.map((data) => data.Total_Mahasiswa_NonAktif);
+                var totalMahasiswa = JumMhsPerProdi.map((data) => data.TotalMahasiswa);
+
+                var options = {
+                    chart: {
+                        height: 340,
+                        type: "area",
+                    },
+                    dataLabels: {
+                        enabled: false,
+                    },
+                    stroke: {
+                        curve: "smooth",
+                    },
+                    colors: ["#5DDAB4", "#FFC107", "#6C757D", "#9694FF"],
+                    series: [
+                        {
+                            name: "Mahasiswa Aktif",
+                            data: mahasiswaAktif,
+                        },
+                        {
+                            name: "Mahasiswa Cuti",
+                            data: mahasiswaCuti,
+                        },
+                        {
+                            name: "Mahasiswa Non Aktif",
+                            data: mahasiswaNonAktif,
+                        },
+                        {
+                            name: "Total Mahasiswa",
+                            data: totalMahasiswa,
+                        },
+                    ],
+                    xaxis: {
+                        categories: years,
+                    },
+                };
+
+                var chart = new ApexCharts(element, options);
+                chart.render();
+            } catch (e) {
+                console.error("Invalid JSON data:", e);
+            }
+        } else {
+            console.error("No data found in data attribute.");
+        }
+    });
+
 });

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DataProcessController;
+use App\Http\Controllers\DataUserController;
 use App\Http\Controllers\DataVisualisasiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -23,10 +24,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/user', function () {
-        return view('user');
-    });
-
     // Route::get('/dashboard', function () {
     //     $data = [
     //         'pages_active' => 'dashboard',
@@ -36,7 +33,11 @@ Route::middleware(['auth'])->group(function () {
     //     return view('dashboard', $data);
     // })->name('dashboard');
 
-    Route::get('/dashboard', [DataVisualisasiController::class, 'DashboardVisualisasi'])->name('dashboard');
+    Route::get('/dashboard', [DataVisualisasiController::class, 'Visualisasi_Dashboard'])->name('dashboard');
+    Route::get('/user', [DataVisualisasiController::class, 'Visualisasi_User'])->name('user');
+
+    Route::post('/user/add-update', [DataUserController::class, 'addUpdate'])->name('user.add-update');
+    Route::post('/user/delete', [DataUserController::class, 'delete'])->name('user.delete');
 
     Route::get('/data-krs', function () {
         $data = [
