@@ -20,6 +20,30 @@
     {{-- CSS MANUAL --}}
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
+    {{-- FIX DATABLE STYLE --}}
+    <style>
+        .dataTables_length {
+            margin-bottom: 10px !important;
+        }
+        .dataTables_length > label{
+            display: inline-flex !important;
+            align-items: center;
+            gap: 5px !important;
+        }
+        .dataTables_filter {
+            float: right !important;
+            margin-bottom: 10px !important;
+        }
+        .dataTables_filter > label{
+            display: inline-flex !important;
+            align-items: center;
+            gap: 5px !important;
+        }
+        .dataTables_paginate > .pagination {
+            float: right !important;
+        }
+    </style>
+
 </head>
 
 <body>

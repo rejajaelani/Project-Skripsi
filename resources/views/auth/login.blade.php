@@ -98,11 +98,7 @@
     <script>
         $(document).ready(function() {
 
-            $(window).on('load', function() {
-                setTimeout(function() {
-                    $('#loading-box').fadeOut();
-                }, 1000);
-            });
+            $('#loading-box').fadeOut();
 
             var storedUsername = localStorage.getItem('username');
             var storedPassword = localStorage.getItem('password');

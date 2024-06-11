@@ -169,4 +169,15 @@ class DataVisualisasiController extends Controller
             'HakAkses' => $user->hak_akses,
         ]);
     }
+
+    public function Visualisasi_DataBebanDosen()
+    {
+        $user = $this->getUserActive();
+
+        return view('pages/data-beban-dosen', [
+            'pages_active' => 'data-beban-dosen',
+            'isActiveMenu' => false,
+            'HakAkses' => $user->hak_akses,
+        ]);
+    }
 }

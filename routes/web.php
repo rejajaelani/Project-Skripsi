@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DataVisualisasiController::class, 'Visualisasi_Dashboard'])->name('dashboard');
     Route::get('/user', [DataVisualisasiController::class, 'Visualisasi_User'])->name('user');
     Route::get('/data-sync', [DataVisualisasiController::class, 'Visualisasi_DataSync'])->name('data-sync');
+    Route::get('/data-beban-dosen', [DataVisualisasiController::class, 'Visualisasi_DataBebanDosen'])->name('data-beban-dosen');
 
     Route::post('/user/add-update', [DataUserController::class, 'addUpdate'])->name('user.add-update');
     Route::post('/user/delete', [DataUserController::class, 'delete'])->name('user.delete');

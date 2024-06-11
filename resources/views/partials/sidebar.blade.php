@@ -83,8 +83,8 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item ">
-                            <a href="#" class='sidebar-link'>
+                        <li class="sidebar-item {{ $pages_active == 'data-beban-dosen' ? 'active' : '' }}">
+                            <a href="{{ route('data-beban-dosen') }}" class='sidebar-link'>
                                 <i class="bi bi-mortarboard-fill"></i>
                                 <span>Data Beban Dosen</span>
                             </a>
