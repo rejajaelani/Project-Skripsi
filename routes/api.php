@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DataProcessController;
+use App\Http\Controllers\DataVisualisasiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/test-api', [DataProcessController::class, 'testGet']);
 Route::post('/sync-data-master', [DataProcessController::class, 'synchronizeData']);
 Route::post('/sync-data-semester', [DataProcessController::class, 'synchronizeData']);
+Route::post('/get-detail-beban-dosen', [DataVisualisasiController::class, 'Visualisasi_DataBebanDosenDetailAPI']);

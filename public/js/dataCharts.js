@@ -115,9 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("No data found in data attribute.");
     }
 
-
     var elements = document.querySelectorAll("[id^='prodi-chart-']");
-    
+
     elements.forEach(function (element) {
         var dataAttribute = element.getAttribute("data-jum-mhs-per-prodi");
 
@@ -126,10 +125,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 var JumMhsPerProdi = JSON.parse(dataAttribute);
 
                 var years = JumMhsPerProdi.map((data) => data.Tahun);
-                var mahasiswaAktif = JumMhsPerProdi.map((data) => data.Total_Mahasiswa_Aktif);
-                var mahasiswaCuti = JumMhsPerProdi.map((data) => data.Total_Mahasiswa_Cuti);
-                var mahasiswaNonAktif = JumMhsPerProdi.map((data) => data.Total_Mahasiswa_NonAktif);
-                var totalMahasiswa = JumMhsPerProdi.map((data) => data.TotalMahasiswa);
+                var mahasiswaAktif = JumMhsPerProdi.map(
+                    (data) => data.Total_Mahasiswa_Aktif
+                );
+                var mahasiswaCuti = JumMhsPerProdi.map(
+                    (data) => data.Total_Mahasiswa_Cuti
+                );
+                var mahasiswaNonAktif = JumMhsPerProdi.map(
+                    (data) => data.Total_Mahasiswa_NonAktif
+                );
+                var totalMahasiswa = JumMhsPerProdi.map(
+                    (data) => data.TotalMahasiswa
+                );
 
                 var options = {
                     chart: {
@@ -175,5 +182,4 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("No data found in data attribute.");
         }
     });
-
 });

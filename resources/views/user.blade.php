@@ -167,7 +167,7 @@
     </div>
 @endsection
 
-@section('scripts')
+@section('script-pages')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Fungsi untuk menghilangkan alert setelah beberapa detik

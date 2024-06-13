@@ -76,8 +76,8 @@
                             </ul>
                         </li>
 
-                        <li class="sidebar-item ">
-                            <a href="#" class='sidebar-link'>
+                        <li class="sidebar-item {{ $pages_active == 'data-kelas-perkuliahan' ? 'active' : '' }}">
+                            <a href="{{ route('data-kelas-perkuliahan') }}" class='sidebar-link'>
                                 <i class="bi bi-bookmarks-fill"></i>
                                 <span>Data Kelas Perkuliahan</span>
                             </a>

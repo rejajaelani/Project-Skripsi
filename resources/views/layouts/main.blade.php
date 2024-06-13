@@ -25,21 +25,25 @@
         .dataTables_length {
             margin-bottom: 10px !important;
         }
-        .dataTables_length > label{
+
+        .dataTables_length>label {
             display: inline-flex !important;
             align-items: center;
             gap: 5px !important;
         }
+
         .dataTables_filter {
             float: right !important;
             margin-bottom: 10px !important;
         }
-        .dataTables_filter > label{
+
+        .dataTables_filter>label {
             display: inline-flex !important;
             align-items: center;
             gap: 5px !important;
         }
-        .dataTables_paginate > .pagination {
+
+        .dataTables_paginate>.pagination {
             float: right !important;
         }
     </style>
@@ -82,7 +86,7 @@
     <?php
     if ($pages_active == 'dashboard') {
     ?>
-        <script src="{{ asset('js/dataCharts.js') }}"></script>
+    <script src="{{ asset('js/dataCharts.js') }}"></script>
     <?php
     }
     ?>
@@ -105,7 +109,7 @@
         });
     </script>
 
-    @yield('scripts')
+    @yield('script-pages')
 
 </body>
 

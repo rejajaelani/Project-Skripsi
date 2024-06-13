@@ -269,7 +269,7 @@
     </div>
 @endsection
 
-@section('scripts')
+@section('script-pages')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var swiper = new Swiper(".mySwiper", {
