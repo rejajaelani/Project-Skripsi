@@ -332,11 +332,11 @@ class DataProcessController extends Controller
             // Mengambil token dari response
             $feeder_token = $tokenResponse->data->token;
 
-            $name_testget = "GetListMahasiswa";
+            $name_testget = "GetListDosen";
             // Membuat data untuk request
             $sync['act'] = $name_testget;
             $sync['token'] = $feeder_token;
-            $sync['filter'] = "id_periode = '20231'";
+            $sync['filter'] = "";
             $sync['order'] = "";
             $sync['limit'] = "";
             $sync['offset'] = "";
@@ -383,7 +383,7 @@ class DataProcessController extends Controller
                 $feeder_token = $tokenResponse->data->token;
 
                 // Membuat data untuk request
-                $sync['act'] = 'GetListMahasiswa';
+                $sync['act'] = 'GetListDosen';
                 $sync['token'] = $feeder_token;
                 $sync['filter'] = "";
                 $sync['order'] = "";

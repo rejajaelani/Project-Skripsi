@@ -34,6 +34,10 @@
                                         @endforeach
                                     </div>
                                 </div>
+                                <button type="button"
+                        style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
+                        data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
+                            class="bi bi-box-arrow-down-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -51,6 +55,10 @@
                                         @endforeach
                                     </div>
                                 </div>
+                                <button type="button"
+                        style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
+                        data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
+                            class="bi bi-box-arrow-down-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -70,6 +78,10 @@
                                         @endforeach
                                     </div>
                                 </div>
+                                <button type="button"
+                        style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
+                        data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
+                            class="bi bi-box-arrow-down-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -87,6 +99,10 @@
                                         @endforeach
                                     </div>
                                 </div>
+                                <button type="button"
+                        style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
+                        data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
+                            class="bi bi-box-arrow-down-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -145,13 +161,15 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- List Modal -->
+
+    <!-- Modal Detail Beban Dosen -->
     <div class="modal fade" id="ModalDetailDosen" tabindex="-1" aria-labelledby="ModalDetailDosenLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="ModalDetailDosenLabel">Detail Beban Dosen</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-closeModalDetailDosen btn-close" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="card shadow">
@@ -215,9 +233,60 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary rounded-0 btn-sm"
-                        data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-closeModalDetailDosen btn btn-outline-secondary rounded-0 btn-sm">Close</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail Beban Dosen -->
+    <div class="modal fade" id="ModalListDosenAktif" tabindex="-1" aria-labelledby="ModalListDosenAktifLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="ModalListDosenAktifLabel">List Dosen Aktif</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped table-sm" id="tableListDosenAktif">
+                        <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Action</th>
+                                    <th>Nama Dosen</th>
+                                    <th>Jumlah Mengajar Kelas</th>
+                                    <th>Rencana Pertemuan</th>
+                                    <th>Realisasi Pertemuan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $no = 1; ?>
+                                @foreach ($ListDosenAktifitas as $DosenAktifitas)
+                                    <tr>
+                                        <td>{{ $no }}</td>
+                                        <td>
+                                            <button type="button"
+                                                class="btn-detail-beban-dosen btn btn-sm btn-outline-primary"
+                                                data-id="{{ $DosenAktifitas->id_dosen }}">Detail</button>
+                                        </td>
+                                        <td>{{ $DosenAktifitas->Nama_Dosen }}</td>
+                                        <td>{{ $DosenAktifitas->Jumlah_Mengajar_Kelas }}</td>
+                                        <td>{{ $DosenAktifitas->Rencana_Pertemuan }}</td>
+                                        <td>{{ $DosenAktifitas->Realisasi_Pertemuan }}</td>
+                                    </tr>
+                                    <?php $no++; ?>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary rounded-0 btn-sm"
+            data-bs-dismiss="modal">Close</button>
+            </div>
             </div>
         </div>
     </div>
@@ -239,6 +308,12 @@
                 }
             });
             $('#tableDosenListMahasiswaBimbingan').DataTable({
+                "language": {
+                    "search": "",
+                    "searchPlaceholder": "Search..."
+                }
+            });
+            $('#tableListDosenAktif').DataTable({
                 "language": {
                     "search": "",
                     "searchPlaceholder": "Search..."
@@ -317,6 +392,29 @@
                             $('#DTStatusDosen').removeClass('text-secondary');
                             $('#DTStatusDosen').removeClass('text-success');
                         }
+                        
+
+                        $("#ModalDetailDosen").css('z-index', '9999');
+                        const detailModal = new bootstrap.Modal(document.getElementById('ModalDetailDosen'));
+                        detailModal.show();
+
+                        $('.btn-closeModalDetailDosen').on('click', function() {
+                            $('#ModalDetailDosen').modal('hide');
+                            removeModalBackdrop();
+                        });
+
+                        function removeModalBackdrop() {
+                            if ($('#ModalListDosenAktif').hasClass('show')) {
+                                $('.modal-backdrop').not(':first').remove();
+                            } else {
+                                $('.modal-backdrop').remove();
+                            }
+                            
+                        }
+
+                        $('#ModalDetailDosen').on('hidden.bs.modal', function() {
+                            removeModalBackdrop();
+                        });
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', error);
