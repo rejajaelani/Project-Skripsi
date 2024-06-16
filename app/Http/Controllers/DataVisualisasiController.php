@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 
 class DataVisualisasiController extends Controller
 {
@@ -179,14 +180,87 @@ class DataVisualisasiController extends Controller
         $DosenIjin = DB::select("SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE nama_status_aktif LIKE '%IJIN%'");
         $TotalDosen = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen');
 
-        $AktifitasDosen = DB::select('SELECT  id_dosen, nama_dosen AS Nama_Dosen, 
-        COUNT(nama_mata_kuliah) AS Jumlah_Mengajar_Kelas, 
-        SUM(rencana_minggu_pertemuan) AS Rencana_Pertemuan, 
-        SUM(realisasi_minggu_pertemuan) AS Realisasi_Pertemuan
-        FROM tbgetaktivitasmengajardosen 
-        WHERE id_periode = 20231
-        GROUP BY id_dosen, nama_dosen
-        ORDER BY nama_dosen ASC');
+        $ListDosen = DB::select("SELECT 
+            ld.id_dosen, 
+            ld.nama_dosen AS Nama_Dosen, 
+            COALESCE(COUNT(amd.nama_mata_kuliah), 0) AS Jumlah_Mengajar_Kelas, 
+            COALESCE(SUM(amd.rencana_minggu_pertemuan), ' - ') AS Rencana_Pertemuan, 
+            COALESCE(SUM(amd.realisasi_minggu_pertemuan), ' - ') AS Realisasi_Pertemuan
+        FROM 
+            tbgetlistdosen ld 
+        LEFT JOIN 
+            tbgetaktivitasmengajardosen amd 
+        ON 
+            ld.id_dosen = amd.id_dosen 
+        AND 
+            amd.id_periode = 20231 
+        GROUP BY 
+            ld.id_dosen, ld.nama_dosen
+        ORDER BY 
+            ld.nama_dosen ASC;");
+
+        $ListDosenAktif = DB::select("SELECT 
+            ld.id_dosen, 
+            ld.nama_dosen AS Nama_Dosen, 
+            COALESCE(COUNT(amd.nama_mata_kuliah), 0) AS Jumlah_Mengajar_Kelas, 
+            COALESCE(SUM(amd.rencana_minggu_pertemuan), ' - ') AS Rencana_Pertemuan, 
+            COALESCE(SUM(amd.realisasi_minggu_pertemuan), ' - ') AS Realisasi_Pertemuan
+        FROM 
+            tbgetlistdosen ld 
+        LEFT JOIN 
+            tbgetaktivitasmengajardosen amd 
+        ON 
+            ld.id_dosen = amd.id_dosen 
+        AND 
+            amd.id_periode = 20231 
+        WHERE
+            ld.nama_status_aktif = 'Aktif'
+        GROUP BY 
+            ld.id_dosen, ld.nama_dosen
+        ORDER BY 
+            ld.nama_dosen ASC;");
+
+        $ListDosenTidakAktif = DB::select("SELECT 
+            ld.id_dosen, 
+            ld.nama_dosen AS Nama_Dosen, 
+            COALESCE(COUNT(amd.nama_mata_kuliah), 0) AS Jumlah_Mengajar_Kelas, 
+            COALESCE(SUM(amd.rencana_minggu_pertemuan), ' - ') AS Rencana_Pertemuan, 
+            COALESCE(SUM(amd.realisasi_minggu_pertemuan), ' - ') AS Realisasi_Pertemuan
+        FROM 
+            tbgetlistdosen ld 
+        LEFT JOIN 
+            tbgetaktivitasmengajardosen amd 
+        ON 
+            ld.id_dosen = amd.id_dosen 
+        AND 
+            amd.id_periode = 20231 
+        WHERE 
+            ld.nama_status_aktif	= 'Tidak Aktif'
+        GROUP BY 
+            ld.id_dosen, ld.nama_dosen
+        ORDER BY 
+            ld.nama_dosen ASC;");
+
+        $ListDosenIjin = DB::select("SELECT 
+            ld.id_dosen, 
+            ld.nama_dosen AS Nama_Dosen, 
+            COALESCE(COUNT(amd.nama_mata_kuliah), 0) AS Jumlah_Mengajar_Kelas, 
+            COALESCE(SUM(amd.rencana_minggu_pertemuan), ' - ') AS Rencana_Pertemuan, 
+            COALESCE(SUM(amd.realisasi_minggu_pertemuan), ' - ') AS Realisasi_Pertemuan
+        FROM 
+            tbgetlistdosen ld 
+        LEFT JOIN 
+            tbgetaktivitasmengajardosen amd 
+        ON 
+            ld.id_dosen = amd.id_dosen 
+        AND 
+            amd.id_periode = 20231 
+        WHERE 
+            ld.nama_status_aktif LIKE '%Ijin%'
+        GROUP BY 
+            ld.id_dosen, ld.nama_dosen
+        ORDER BY 
+            ld.nama_dosen ASC;");
 
         $TotalDosenCowok = DB::table('tbgetlistdosen')
             ->where('jenis_kelamin', 'L')
@@ -204,7 +278,10 @@ class DataVisualisasiController extends Controller
             'DosenTidakAktif' => $DosenTidakAktif,
             'DosenIjin' => $DosenIjin,
             'TotalDosen' => $TotalDosen,
-            'ListDosenAktifitas' => $AktifitasDosen,
+            'ListDosen' => $ListDosen,
+            'ListDosenAktif' => $ListDosenAktif,
+            'ListDosenTidakAktif' => $ListDosenTidakAktif,
+            'ListDosenIjin' => $ListDosenIjin,
             'TotalDosenCowok' => $TotalDosenCowok,
             'TotalDosenCewek' => $TotalDosenCewek,
         ]);
@@ -357,13 +434,46 @@ class DataVisualisasiController extends Controller
         ]);
     }
 
-    public function Visualisasi_DataBebanDosenDetailAPI(Request $request)
+    public function Visualisasi_DataBebanDosenDetail(Request $request)
     {
-        $id = $request->input('id');
+        $encryptedId = $request->input('id');
+        $id = Crypt::decrypt($encryptedId);
+        $user = $this->getUserActive();
+
         // Ambil data dari database berdasarkan ID
-        $data = DB::table('tbgetlistdosen')->where('id_dosen', $id)->first();
+        $DataDosen = DB::table('tbgetlistdosen')->where('id_dosen', $id)->first();
+
+        $ListKelasDiajar = DB::select("SELECT 
+            mk.id_matkul AS IdMatkul, 
+            mk.nama_mata_kuliah AS NamaMatkul,  
+            mk.kode_mata_kuliah AS KodeMatkul, 
+            mk.nama_program_studi AS NamaProdi, 
+            amd.nama_kelas_kuliah AS Kelas, 
+            mk.sks_mata_kuliah AS JumlahSKS, 
+            amd.rencana_minggu_pertemuan AS RencanaPertemuan, 
+            amd.realisasi_minggu_pertemuan AS RealisasiPertemuan 
+        FROM tbgetaktivitasmengajardosen amd 
+        LEFT JOIN tbgetlistmatakuliah mk ON amd.id_matkul = mk.id_matkul 
+        WHERE amd.id_dosen = ?", [$id]);
+
+        $ListMahasiswaBimbingan = DB::select("SELECT  lm.nama_mahasiswa AS NamaMahasiswa, 
+            lm.nim AS Nim, 
+            lm.nama_program_studi AS ProdiMahasiswa, 
+            dp.nama_dosen AS NamaDosen, 
+            dp.pembimbing_ke AS PembimbingKe, 
+            dp.jenis_aktivitas AS AktivitasBimbingan
+        FROM tbgetdosenpembimbing dp 
+        LEFT JOIN tbgetlistmahasiswa lm ON dp.id_registrasi_mahasiswa = lm.id_registrasi_mahasiswa 
+        WHERE lm.id_periode = '20231' AND dp.id_dosen = ?", [$id]);
 
         // Kembalikan data sebagai JSON
-        return response()->json($data);
+        return view('pages/detail-data-beban-dosen', [
+            'pages_active' => 'data-beban-dosen',
+            'isActiveMenu' => false,
+            'HakAkses' => $user->hak_akses,
+            'DataDosen' => $DataDosen,
+            'ListKelasDiajar' => $ListKelasDiajar,
+            'ListMahasiswaBimbingan' => $ListMahasiswaBimbingan
+        ]);
     }
 }

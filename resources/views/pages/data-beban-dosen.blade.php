@@ -35,9 +35,9 @@
                                     </div>
                                 </div>
                                 <button type="button"
-                        style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
-                        data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
-                            class="bi bi-box-arrow-down-right"></i></button>
+                                    style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
+                                    data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
+                                        class="bi bi-box-arrow-down-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -56,9 +56,9 @@
                                     </div>
                                 </div>
                                 <button type="button"
-                        style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
-                        data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
-                            class="bi bi-box-arrow-down-right"></i></button>
+                                    style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
+                                    data-bs-toggle="modal" data-bs-target="#ModalListDosenTidakAktif"><i
+                                        class="bi bi-box-arrow-down-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -79,9 +79,9 @@
                                     </div>
                                 </div>
                                 <button type="button"
-                        style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
-                        data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
-                            class="bi bi-box-arrow-down-right"></i></button>
+                                    style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
+                                    data-bs-toggle="modal" data-bs-target="#ModalListDosenIjin"><i
+                                        class="bi bi-box-arrow-down-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -99,10 +99,6 @@
                                         @endforeach
                                     </div>
                                 </div>
-                                <button type="button"
-                        style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;"
-                        data-bs-toggle="modal" data-bs-target="#ModalListDosenAktif"><i
-                            class="bi bi-box-arrow-down-right"></i></button>
                             </div>
                         </div>
                     </div>
@@ -137,19 +133,21 @@
                             </thead>
                             <tbody>
                                 <?php $no = 1; ?>
-                                @foreach ($ListDosenAktifitas as $DosenAktifitas)
+                                @foreach ($ListDosen as $Dosen)
                                     <tr>
                                         <td>{{ $no }}</td>
                                         <td>
-                                            <button type="button"
-                                                class="btn-detail-beban-dosen btn btn-sm btn-outline-primary"
-                                                data-id="{{ $DosenAktifitas->id_dosen }}" data-bs-toggle="modal"
-                                                data-bs-target="#ModalDetailDosen">Detail</button>
+                                            <form action="{{ route('detail-data-beban-dosen') }}" method="GET">
+                                                <input type="hidden" name="id" id="id-dosen"
+                                                    value="{{ \Illuminate\Support\Facades\Crypt::encrypt($Dosen->id_dosen) }}">
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-outline-primary">Detail</button>
+                                            </form>
                                         </td>
-                                        <td>{{ $DosenAktifitas->Nama_Dosen }}</td>
-                                        <td>{{ $DosenAktifitas->Jumlah_Mengajar_Kelas }}</td>
-                                        <td>{{ $DosenAktifitas->Rencana_Pertemuan }}</td>
-                                        <td>{{ $DosenAktifitas->Realisasi_Pertemuan }}</td>
+                                        <td>{{ $Dosen->Nama_Dosen }}</td>
+                                        <td>{{ $Dosen->Jumlah_Mengajar_Kelas }}</td>
+                                        <td>{{ $Dosen->Rencana_Pertemuan }}</td>
+                                        <td>{{ $Dosen->Realisasi_Pertemuan }}</td>
                                     </tr>
                                     <?php $no++; ?>
                                 @endforeach
@@ -207,14 +205,22 @@
                                 <thead>
                                     <tr>
                                         <th>NO</th>
-                                        <th>NO</th>
-                                        <th>NO</th>
-                                        <th>NO</th>
+                                        <th>Mata Kuliah</th>
+                                        <th>Kode Mata Kuliah</th>
+                                        <th>Prodi</th>
+                                        <th>Kelas</th>
+                                        <th>Jumlah SKS</th>
+                                        <th>Rencana Pertemuan</th>
+                                        <th>Realisasi Pertemuan</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <!-- Tabel body akan diisi dengan jQuery -->
+                                </tbody>
                             </table>
                         </div>
                     </div>
+                    <!-- Tambahan untuk List Mahasiswa Bimbingan jika diperlukan -->
                     <div class="card shadow">
                         <div class="card-body">
                             <h6 class="mb-3">List Mahasiswa Bimbingan</h6>
@@ -223,70 +229,193 @@
                                 <thead>
                                     <tr>
                                         <th>NO</th>
-                                        <th>NO</th>
-                                        <th>NO</th>
-                                        <th>NO</th>
+                                        <th>Nama Mahasiswa</th>
+                                        <th>NIM</th>
+                                        <th>Prodi</th>
+                                        <th>Pembimbing Ke</th>
+                                        <th>Aktifitas Bimbingan</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <!-- Tabel body akan diisi dengan jQuery -->
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-closeModalDetailDosen btn btn-outline-secondary rounded-0 btn-sm">Close</button>
+                    <button type="button"
+                        class="btn-closeModalDetailDosen btn btn-outline-secondary rounded-0 btn-sm">Close</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Detail Beban Dosen -->
-    <div class="modal fade" id="ModalListDosenAktif" tabindex="-1" aria-labelledby="ModalListDosenAktifLabel" aria-hidden="true">
+
+    <!-- Modal List Dosen Aktif -->
+    <div class="modal fade" id="ModalListDosenAktif" tabindex="-1" aria-labelledby="ModalListDosenAktifLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="ModalListDosenAktifLabel">List Dosen Aktif</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <table class="table table-bordered table-striped table-sm" id="tableListDosenAktif">
-                        <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Action</th>
-                                    <th>Nama Dosen</th>
-                                    <th>Jumlah Mengajar Kelas</th>
-                                    <th>Rencana Pertemuan</th>
-                                    <th>Realisasi Pertemuan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $no = 1; ?>
-                                @foreach ($ListDosenAktifitas as $DosenAktifitas)
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ModalListDosenAktifLabel">List Dosen Aktif</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped table-sm" id="tableListDosenAktif">
+                                <thead>
                                     <tr>
-                                        <td>{{ $no }}</td>
-                                        <td>
-                                            <button type="button"
-                                                class="btn-detail-beban-dosen btn btn-sm btn-outline-primary"
-                                                data-id="{{ $DosenAktifitas->id_dosen }}">Detail</button>
-                                        </td>
-                                        <td>{{ $DosenAktifitas->Nama_Dosen }}</td>
-                                        <td>{{ $DosenAktifitas->Jumlah_Mengajar_Kelas }}</td>
-                                        <td>{{ $DosenAktifitas->Rencana_Pertemuan }}</td>
-                                        <td>{{ $DosenAktifitas->Realisasi_Pertemuan }}</td>
+                                        <th>No</th>
+                                        <th>Action</th>
+                                        <th>Nama Dosen</th>
+                                        <th>Jumlah Mengajar Kelas</th>
+                                        <th>Rencana Pertemuan</th>
+                                        <th>Realisasi Pertemuan</th>
                                     </tr>
-                                    <?php $no++; ?>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <?php $no = 1; ?>
+                                    @foreach ($ListDosenAktif as $Dosen)
+                                        <tr>
+                                            <td>{{ $no }}</td>
+                                            <td>
+                                                <form action="{{ route('detail-data-beban-dosen') }}" method="GET">
+                                                    <input type="hidden" name="id" id="id-dosen"
+                                                        value="{{ \Illuminate\Support\Facades\Crypt::encrypt($Dosen->id_dosen) }}">
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-outline-primary">Detail</button>
+                                                </form>
+                                            </td>
+                                            <td>{{ $Dosen->Nama_Dosen }}</td>
+                                            <td>{{ $Dosen->Jumlah_Mengajar_Kelas }}</td>
+                                            <td>{{ $Dosen->Rencana_Pertemuan }}</td>
+                                            <td>{{ $Dosen->Realisasi_Pertemuan }}</td>
+                                        </tr>
+                                        <?php $no++; ?>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary rounded-0 btn-sm"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary rounded-0 btn-sm"
-            data-bs-dismiss="modal">Close</button>
+        </div>
+    </div>
+
+    <!-- Modal List Dosen Tidak Aktif -->
+    <div class="modal fade" id="ModalListDosenTidakAktif" tabindex="-1" aria-labelledby="ModalListDosenTidakAktifLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ModalListDosenTidakAktifLabel">List Dosen Tidak Aktif</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped table-sm" id="tableListDosenTidakAktif">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Action</th>
+                                        <th>Nama Dosen</th>
+                                        <th>Jumlah Mengajar Kelas</th>
+                                        <th>Rencana Pertemuan</th>
+                                        <th>Realisasi Pertemuan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $no = 1; ?>
+                                    @foreach ($ListDosenTidakAktif as $Dosen)
+                                        <tr>
+                                            <td>{{ $no }}</td>
+                                            <td>
+                                                <form action="{{ route('detail-data-beban-dosen') }}" method="GET">
+                                                    <input type="hidden" name="id" id="id-dosen"
+                                                        value="{{ \Illuminate\Support\Facades\Crypt::encrypt($Dosen->id_dosen) }}">
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-outline-primary">Detail</button>
+                                                </form>
+                                            </td>
+                                            <td>{{ $Dosen->Nama_Dosen }}</td>
+                                            <td>{{ $Dosen->Jumlah_Mengajar_Kelas }}</td>
+                                            <td>{{ $Dosen->Rencana_Pertemuan }}</td>
+                                            <td>{{ $Dosen->Realisasi_Pertemuan }}</td>
+                                        </tr>
+                                        <?php $no++; ?>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary rounded-0 btn-sm"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal List Dosen Ijin -->
+    <div class="modal fade" id="ModalListDosenIjin" tabindex="-1" aria-labelledby="ModalListDosenIjinLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ModalListDosenIjinLabel">List Dosen Ijin</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped table-sm" id="tableListDosenIjin">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Action</th>
+                                        <th>Nama Dosen</th>
+                                        <th>Jumlah Mengajar Kelas</th>
+                                        <th>Rencana Pertemuan</th>
+                                        <th>Realisasi Pertemuan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php $no = 1; ?>
+                                    @foreach ($ListDosenIjin as $Dosen)
+                                        <tr>
+                                            <td>{{ $no }}</td>
+                                            <td>
+                                                <form action="{{ route('detail-data-beban-dosen') }}" method="GET">
+                                                    <input type="hidden" name="id" id="id-dosen"
+                                                        value="{{ \Illuminate\Support\Facades\Crypt::encrypt($Dosen->id_dosen) }}">
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-outline-primary">Detail</button>
+                                                </form>
+                                            </td>
+                                            <td>{{ $Dosen->Nama_Dosen }}</td>
+                                            <td>{{ $Dosen->Jumlah_Mengajar_Kelas }}</td>
+                                            <td>{{ $Dosen->Rencana_Pertemuan }}</td>
+                                            <td>{{ $Dosen->Realisasi_Pertemuan }}</td>
+                                        </tr>
+                                        <?php $no++; ?>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary rounded-0 btn-sm"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -301,19 +430,19 @@
                     "searchPlaceholder": "Search..."
                 }
             });
-            $('#tableDosenKelasDiajar').DataTable({
-                "language": {
-                    "search": "",
-                    "searchPlaceholder": "Search..."
-                }
-            });
-            $('#tableDosenListMahasiswaBimbingan').DataTable({
-                "language": {
-                    "search": "",
-                    "searchPlaceholder": "Search..."
-                }
-            });
             $('#tableListDosenAktif').DataTable({
+                "language": {
+                    "search": "",
+                    "searchPlaceholder": "Search..."
+                }
+            });
+            $('#tableListDosenTidakAktif').DataTable({
+                "language": {
+                    "search": "",
+                    "searchPlaceholder": "Search..."
+                }
+            });
+            $('#tableListDosenIjin').DataTable({
                 "language": {
                     "search": "",
                     "searchPlaceholder": "Search..."
@@ -366,52 +495,94 @@
                     },
                     success: function(response) {
                         console.log(response);
-                        $('#DTNamaDosen').html(response.nama_dosen);
-                        $('#DTNidn').html(response.nidn === '-' || response.nidn == null ||
-                            response
-                            .nidn === '' ?
-                            '-' :
-                            response.nidn);
-                        $('#DTNip').html(
-                            response.nip === '-' || response.nip == null || response.nip ===
-                            '' ?
-                            '-' :
-                            response.nip
-                        );
-                        $('#DTStatusDosen').html(response.nama_status_aktif);
-                        if (response.nama_status_aktif == 'Aktif') {
-                            $('#DTStatusDosen').addClass('text-success');
-                            $('#DTStatusDosen').removeClass('text-secondary');
-                            $('#DTStatusDosen').removeClass('text-warning');
-                        } else if (response.nama_status_aktif == 'Tidak Aktif') {
-                            $('#DTStatusDosen').addClass('text-secondary');
-                            $('#DTStatusDosen').removeClass('text-success');
-                            $('#DTStatusDosen').removeClass('text-warning');
-                        } else {
-                            $('#DTStatusDosen').addClass('text-warning');
-                            $('#DTStatusDosen').removeClass('text-secondary');
-                            $('#DTStatusDosen').removeClass('text-success');
-                        }
-                        
 
+                        // Mengisi detail dosen
+                        $('#DTNamaDosen').html(response.DataDosen.nama_dosen);
+                        $('#DTNidn').html(
+                            response.DataDosen.nidn === '-' || response.DataDosen.nidn ==
+                            null || response.DataDosen.nidn === '' ?
+                            '-' :
+                            response.DataDosen.nidn
+                        );
+                        $('#DTNip').html(
+                            response.DataDosen.nip === '-' || response.DataDosen.nip ==
+                            null || response.DataDosen.nip === '' ?
+                            '-' :
+                            response.DataDosen.nip
+                        );
+                        $('#DTStatusDosen').html(response.DataDosen.nama_status_aktif);
+
+                        // Mengatur kelas status dosen berdasarkan status
+                        if (response.DataDosen.nama_status_aktif == 'Aktif') {
+                            $('#DTStatusDosen').addClass('text-success').removeClass(
+                                'text-secondary text-warning');
+                        } else if (response.DataDosen.nama_status_aktif == 'Tidak Aktif') {
+                            $('#DTStatusDosen').addClass('text-secondary').removeClass(
+                                'text-success text-warning');
+                        } else {
+                            $('#DTStatusDosen').addClass('text-warning').removeClass(
+                                'text-secondary text-success');
+                        }
+
+                        // Mengisi tabel List Kelas Diajar
+                        let tableRows1 = '';
+                        response.ListKelasDiajar.forEach((kelas, index) => {
+                            tableRows1 += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${kelas.NamaMatkul}</td>
+                                    <td>${kelas.KodeMatkul}</td>
+                                    <td>${kelas.NamaProdi}</td>
+                                    <td>${kelas.Kelas}</td>
+                                    <td>${kelas.JumlahSKS}</td>
+                                    <td>${kelas.RencanaPertemuan}</td>
+                                    <td>${kelas.RealisasiPertemuan}</td>
+                                </tr>
+                            `;
+                        });
+                        $('#tableDosenKelasDiajar tbody').html(tableRows1);
+
+                        // Mengisi tabel List Mahasiswa Bimbingan
+                        let tableRows2 = '';
+                        response.ListMahasiswaBimbingan.forEach((mahasiswa, index) => {
+                            tableRows2 += `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${mahasiswa.NamaMahasiswa}</td>
+                                    <td>${mahasiswa.Nim}</td>
+                                    <td>${mahasiswa.ProdiMahasiswa}</td>
+                                    <td>${mahasiswa.PembimbingKe}</td>
+                                    <td>${mahasiswa.AktivitasBimbingan}</td>
+                                </tr>
+                            `;
+                        });
+                        $('#tableDosenListMahasiswaBimbingan tbody').html(tableRows2);
+
+                        // Menampilkan modal
                         $("#ModalDetailDosen").css('z-index', '9999');
-                        const detailModal = new bootstrap.Modal(document.getElementById('ModalDetailDosen'));
+                        const detailModal = new bootstrap.Modal(document.getElementById(
+                            'ModalDetailDosen'));
                         detailModal.show();
 
+                        // Event untuk tombol close
                         $('.btn-closeModalDetailDosen').on('click', function() {
                             $('#ModalDetailDosen').modal('hide');
                             removeModalBackdrop();
                         });
 
+                        // Fungsi untuk menghapus backdrop modal
                         function removeModalBackdrop() {
-                            if ($('#ModalListDosenAktif').hasClass('show')) {
+                            if ($('#ModalListDosenAktif').hasClass('show') || $(
+                                    '#ModalListDosenTidakAktif').hasClass('show') || $(
+                                    '#ModalListDosenIjin').hasClass('show')) {
                                 $('.modal-backdrop').not(':first').remove();
                             } else {
                                 $('.modal-backdrop').remove();
+                                $('body').css('overflow', 'auto');
                             }
-                            
                         }
 
+                        // Event ketika modal ditutup
                         $('#ModalDetailDosen').on('hidden.bs.modal', function() {
                             removeModalBackdrop();
                         });
