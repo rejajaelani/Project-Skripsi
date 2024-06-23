@@ -17,6 +17,91 @@
         @endif
     </div>
     <div class="page-content">
+        @if (
+            $HakAkses == 'Admin' ||
+                $HakAkses == 'Rektor' ||
+                $HakAkses == 'Teknologi dan Informatika' ||
+                $HakAkses == 'Bisnis dan Desain Kreatif')
+            <form action="{{ route('data-beban-dosen') }}" method="GET" class="mb-3" id="form-select-filter">
+                <div class="row">
+                    <div class="col-3">
+                        <select name="hak_akses" id="hak_akses" class="form-select form-select-sm">
+                            @if ($HakAkses == 'Admin' || $HakAkses == 'Rektor')
+                                <option value="" style="display: none;"></option>
+                                <option value="" disabled>~Universitas~</option>
+                                <option value="Rektor" {{ $SelectedAkses == 'Rektor' ? 'selected' : '' }}
+                                    {{ $SelectedAkses != 'Rektor' ? 'style=display:none;' : '' }}>All Data</option>
+                                <option value="Admin" {{ $SelectedAkses == 'Admin' ? 'selected' : '' }}
+                                    {{ $SelectedAkses != 'Admin' ? 'style=display:none;' : '' }}>All Data</option>
+                                <option value="" disabled>~Fakultas~</option>
+                                @foreach ($ListFakultas as $fakultas)
+                                    <option value="{{ $fakultas->nama_fakultas }}"
+                                        {{ $SelectedAkses == $fakultas->nama_fakultas ? 'selected' : '' }}>
+                                        {{ $fakultas->nama_fakultas }}
+                                    </option>
+                                @endforeach
+                                <option value="" disabled>~Prodi~</option>
+                                @foreach ($ListProdi as $prodi)
+                                    <option value="{{ $prodi->nama_program_studi }}"
+                                        {{ $SelectedAkses == $prodi->nama_program_studi ? 'selected' : '' }}>
+                                        {{ $prodi->nama_program_studi }}
+                                    </option>
+                                @endforeach
+                            @elseif ($HakAkses == 'Teknologi dan Informatika')
+                                <option value="" disabled>~Fakultas~</option>
+                                <option value="Teknologi dan Informatika"
+                                    {{ $SelectedAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>Teknologi dan
+                                    Informatika</option>
+                                <option value="" disabled>~Prodi~</option>
+                                <option value="Teknik Informatika"
+                                    {{ $SelectedAkses == 'Teknik Informatika' ? 'selected' : '' }}>Teknik Informatika
+                                </option>
+                                <option value="Rekayasa Sistem Komputer"
+                                    {{ $SelectedAkses == 'Rekayasa Sistem Komputer' ? 'selected' : '' }}>Rekayasa Sistem
+                                    Komputer</option>
+                                <option value="Sistem Komputer"
+                                    {{ $SelectedAkses == 'Sistem Komputer' ? 'selected' : '' }}>
+                                    Sistem Komputer</option>
+                            @elseif ($HakAkses == 'Bisnis dan Desain Kreatif')
+                                <option value="" disabled>~Fakultas~</option>
+                                <option value="Bisnis dan Desain Kreatif"
+                                    {{ $SelectedAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>Bisnis dan Desain
+                                    Kreatif</option>
+                                <option value="" disabled>~Prodi~</option>
+                                <option value="Bisnis Digital" {{ $SelectedAkses == 'Bisnis Digital' ? 'selected' : '' }}>
+                                    Bisnis Digital</option>
+                                <option value="Desain Komunikasi Visual"
+                                    {{ $SelectedAkses == 'Desain Komunikasi Visual' ? 'selected' : '' }}>Desain Komunikasi
+                                    Visual</option>
+                            @endif
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <select name="semester" id="semester" class="form-select form-select-sm">
+                            @for ($year = 2023; $year >= 2015; $year--)
+                                <option value="{{ $year }}2">{{ $year }} (Genap)</option>
+                                <option value="{{ $year }}1">{{ $year }} (Ganjil)</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-sm btn-outline-primary"><i
+                                class="bi bi-send-fill"></i>&nbsp;FILTER</button>
+                        <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-secondary"><i
+                                class="bi bi-arrow-counterclockwise"></i></a>
+                    </div>
+                </div>
+            </form>
+        @else
+            <div class="row mb-3">
+                <div class="col-3">
+                    <select name="" id="" class="form-select form-select-sm" disabled>
+                        <option value="{{ $SelectedAkses }}" style="display: none" selected>{{ $SelectedAkses }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        @endif
         <div class="row">
             <div class="col-9 col-lg-9 col-md-12">
                 <div class="row">
@@ -162,7 +247,8 @@
     <!-- List Modal -->
 
     <!-- Modal Detail Beban Dosen -->
-    <div class="modal fade" id="ModalDetailDosen" tabindex="-1" aria-labelledby="ModalDetailDosenLabel" aria-hidden="true">
+    <div class="modal fade" id="ModalDetailDosen" tabindex="-1" aria-labelledby="ModalDetailDosenLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">

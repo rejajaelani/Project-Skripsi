@@ -104,6 +104,14 @@
                                 @endif
                             </select>
                         </div>
+                        <div class="col-2">
+                            <select name="" id="" class="form-select form-select-sm">
+                                @for ($year = 2023; $year >= 2015; $year--)
+                                    <option value="{{ $year }}2">{{ $year }} (Genap)</option>
+                                    <option value="{{ $year }}1">{{ $year }} (Ganjil)</option>
+                                @endfor
+                            </select>
+                        </div>
                         <div class="col">
                             <button type="submit" class="btn btn-sm btn-outline-primary"><i
                                     class="bi bi-send-fill"></i>&nbsp;FILTER</button>

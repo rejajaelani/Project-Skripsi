@@ -131,11 +131,11 @@ class DataVisualisasiController extends Controller
             'isActiveMenu' => false,
             'HakAkses' => $hak_akses_selected,
             'UserAkses' => $user->hak_akses,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
             'JumMhsPerProdi' => $RekapJumlahMahasiswaPerProdi,
             'JumMhsTotal' => $GabunganDataRekapJumlahMahasiswaTotal,
             'JumMhsTotalPerTahun' => $RekapJumlahMahasiswaTotalPerTahun,
-            'ListProdi' => $ListProdi,
-            'ListFakultas' => $ListFakultas,
             'RekapPerProdi' => $RekapPerProdi
         ]);
     }
@@ -171,11 +171,41 @@ class DataVisualisasiController extends Controller
         ]);
     }
 
-    public function Visualisasi_DataBebanDosen()
+    public function Visualisasi_DataBebanDosen(Request $request)
     {
         $user = $this->getUserActive();
+        $HakAkses = $this->getHakAksesUser($request->select_data);
 
-        $DosenAktif = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE id_status_aktif = 1');
+        $hak_akses_selected = $request->input('hak_akses', $user->hak_akses);
+        $Semester_selected = $request->input('semester', 20231);
+
+        $ListProdi = DB::select('SELECT * FROM tbgetprodi');
+        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
+
+        // $DosenAktif = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE id_status_aktif = 1');
+        $whereProgramStudi = $hak_akses_selected !== 'Admin' ? "amd.nama_program_studi = '$hak_akses_selected' AND" : "";
+
+        $DosenAktif = DB::select("
+        SELECT 
+            COUNT(*) AS TotalDosen
+        FROM (
+            SELECT 
+                COUNT(ld.id_dosen) AS JumlahDosen
+            FROM 
+                tbgetlistdosen ld 
+            LEFT JOIN 
+                tbgetaktivitasmengajardosen amd 
+            ON 
+                ld.id_dosen = amd.id_dosen 
+            AND 
+                amd.id_periode = ? 
+            WHERE 
+                $whereProgramStudi 
+                ld.id_status_aktif = 1
+            GROUP BY 
+                ld.id_dosen, ld.nama_dosen
+        ) AS subquery;", [$Semester_selected]);
+
         $DosenTidakAktif = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE id_status_aktif = 2');
         $DosenIjin = DB::select("SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE nama_status_aktif LIKE '%IJIN%'");
         $TotalDosen = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen');
@@ -274,6 +304,9 @@ class DataVisualisasiController extends Controller
             'pages_active' => 'data-beban-dosen',
             'isActiveMenu' => false,
             'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $hak_akses_selected,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
             'DosenAktif' => $DosenAktif,
             'DosenTidakAktif' => $DosenTidakAktif,
             'DosenIjin' => $DosenIjin,
@@ -287,9 +320,15 @@ class DataVisualisasiController extends Controller
         ]);
     }
 
-    public function Visualisasi_DataKelasPerkuliahan()
+    public function Visualisasi_DataKelasPerkuliahan(Request $request)
     {
         $user = $this->getUserActive();
+        $HakAkses = $this->getHakAksesUser($request->select_data);
+
+        $hak_akses_selected = $request->select_data ?? $user->hak_akses;
+
+        $ListProdi = DB::select('SELECT * FROM tbgetprodi');
+        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
 
         $TotalMatkulWajib = DB::select("SELECT COUNT(id) AS TotalMatkul
         FROM tbgetlistmatakuliah 
@@ -415,6 +454,9 @@ class DataVisualisasiController extends Controller
             'pages_active' => 'data-kelas-perkuliahan',
             'isActiveMenu' => false,
             'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $hak_akses_selected,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
             'TotalMatkulWajib' => $TotalMatkulWajib,
             'TotalMatkulWajibPeminatan' => $TotalMatkulWajibPeminatan,
             'TotalMatkulPilihan' => $TotalMatkulPilihan,
