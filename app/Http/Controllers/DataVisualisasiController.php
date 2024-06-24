@@ -206,7 +206,28 @@ class DataVisualisasiController extends Controller
                 ld.id_dosen, ld.nama_dosen
         ) AS subquery;", [$Semester_selected]);
 
-        $DosenTidakAktif = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE id_status_aktif = 2');
+        $DosenTidakAktif = DB::select("
+        SELECT 
+            COUNT(*) AS TotalDosen
+        FROM (
+            SELECT 
+                COUNT(ld.id_dosen) AS JumlahDosen
+            FROM 
+                tbgetlistdosen ld 
+            LEFT JOIN 
+                tbgetaktivitasmengajardosen amd 
+            ON 
+                ld.id_dosen = amd.id_dosen 
+            AND 
+                amd.id_periode = ? 
+            WHERE 
+                $whereProgramStudi 
+                ld.id_status_aktif = 2
+            GROUP BY 
+                ld.id_dosen, ld.nama_dosen
+        ) AS subquery;", [$Semester_selected]);
+
+        //$DosenTidakAktif = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE id_status_aktif = 2');
         $DosenIjin = DB::select("SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE nama_status_aktif LIKE '%IJIN%'");
         $TotalDosen = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen');
 
@@ -518,4 +539,17 @@ class DataVisualisasiController extends Controller
             'ListMahasiswaBimbingan' => $ListMahasiswaBimbingan
         ]);
     }
+
+
+    // public function Visualisasi_DataKRS()
+    // {
+    //     return view(, [
+    //         'pages_active' => 'data-beban-dosen',
+    //         'isActiveMenu' => false,
+    //         'HakAkses' => $user->hak_akses,
+    //         'SelectedAkses' => $hak_akses_selected,
+    //         'ListProdi' => $ListProdi,
+    //         'ListFakultas' => $ListFakultas,
+    //     ])
+    // }
 }

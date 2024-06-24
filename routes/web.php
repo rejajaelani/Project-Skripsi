@@ -41,6 +41,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/detail-data-beban-dosen', [DataVisualisasiController::class, 'Visualisasi_DataBebanDosenDetail'])->name('detail-data-beban-dosen');
 
+    Route::get('/data-krs', [DataVisualisasiController::class, 'Visualisasi_DataKRS'])->name('data-krs');
+    Route::get('/data-aktivitas-mahasiswa', [DataVisualisasiController::class, 'Visualisasi_DataAktivitasMahasiswa'])->name('data-aktivitas-mahasiswa');
+    Route::get('/data-kelulusan-do', [DataVisualisasiController::class, 'Visualisasi_DataKelulusanDO'])->name('data-kelulusan-do');
+
     Route::post('/user/add-update', [DataUserController::class, 'addUpdate'])->name('user.add-update');
     Route::post('/user/delete', [DataUserController::class, 'delete'])->name('user.delete');
 

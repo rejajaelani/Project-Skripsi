@@ -87,7 +87,7 @@
                     <div class="col">
                         <button type="submit" class="btn btn-sm btn-outline-primary"><i
                                 class="bi bi-send-fill"></i>&nbsp;FILTER</button>
-                        <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-secondary"><i
+                        <a href="{{ route('data-beban-dosen') }}" class="btn btn-sm btn-outline-secondary"><i
                                 class="bi bi-arrow-counterclockwise"></i></a>
                     </div>
                 </div>
