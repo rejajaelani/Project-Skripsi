@@ -5,9 +5,7 @@
                             <i class="bi bi-justify fs-3"></i>
                         </a>
 
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -67,30 +65,26 @@
                                             <h6 class="mb-0 text-gray-600">{{ session('user')['nama_lengkap'] }}</h6>
                                             <p class="mb-0 text-sm text-gray-600">
                                                 @if (session('user')['hak_akses'] == 0)
-                                                    Admin
+                                                Admin
                                                 @else
-                                                    {{ session('user')['hak_akses'] }}
+                                                {{ session('user')['hak_akses'] }}
                                                 @endif
                                             </p>
 
                                         </div>
                                         <div class="user-img d-flex align-items-center">
                                             <div class="avatar avatar-md">
-                                                <img
-                                                    src="https://api.multiavatar.com/{{ session('user')['username'] }}.svg">
+                                                <img src="https://api.multiavatar.com/{{ session('user')['username'] }}.svg">
                                             </div>
                                         </div>
                                     </div>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm"
-                                    aria-labelledby="dropdownMenuButton" style="min-width: 11rem;">
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="dropdownMenuButton" style="min-width: 11rem;">
                                     <li>
-                                        <h6 class="dropdown-header">Hello, <span
-                                                style="text-transform: capitalize;">{{ session('user')['username'] }}</span>!
+                                        <h6 class="dropdown-header">Hello, <span style="text-transform: capitalize;">{{ session('user')['username'] }}</span>!
                                         </h6>
                                     </li>
-                                    <li><a class="dropdown-item" href="#"><i
-                                                class="icon-mid bi bi-person me-2"></i> My
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#ModalProfileDetail"><i class="icon-mid bi bi-person me-2"></i> My
                                             Profile</a></li>
                                     </li>
                                     <li>
@@ -107,3 +101,55 @@
                     </div>
                 </nav>
             </header>
+
+            <!-- Modal Profile Detail -->
+            <div class="modal fade" id="ModalProfileDetail" tabindex="-1" aria-labelledby="ModalProfileDetailLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="ModalProfileDetailLabel"><i class="bi bi-person-circle" style="font-size: 27px;"></i>&nbsp;Profile Detail</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 150px !important;"></th>
+                                        <th style="width: 5px !important;"></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Nama</td>
+                                        <td>:</td>
+                                        <td>{{ $User->nama_lengkap }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Username</td>
+                                        <td>:</td>
+                                        <td>{{ $User->username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email</td>
+                                        <td>:</td>
+                                        <td>{{ $User->email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hak Akses</td>
+                                        <td>:</td>
+                                        @if ($User->hak_akses == "Admin" || $User->hak_akses == "Rektor")
+                                            <td><span style="padding: 2px 10px;border: 0.5px solid grey;border-radius: 5px;">All Data</span></td>
+                                        @else
+                                            <td><span style="padding: 2px 10px;border: 0.5px solid grey;border-radius: 5px;">{{ $User->hak_akses }}</span></td>
+                                        @endif
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-0" data-bs-dismiss="modal">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>

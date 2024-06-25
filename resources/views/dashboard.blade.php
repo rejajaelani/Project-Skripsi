@@ -104,14 +104,6 @@
                                 @endif
                             </select>
                         </div>
-                        <div class="col-2">
-                            <select name="" id="" class="form-select form-select-sm">
-                                @for ($year = 2023; $year >= 2015; $year--)
-                                    <option value="{{ $year }}2">{{ $year }} (Genap)</option>
-                                    <option value="{{ $year }}1">{{ $year }} (Ganjil)</option>
-                                @endfor
-                            </select>
-                        </div>
                         <div class="col">
                             <button type="submit" class="btn btn-sm btn-outline-primary"><i
                                     class="bi bi-send-fill"></i>&nbsp;FILTER</button>
@@ -132,76 +124,18 @@
             @endif
 
             <div class="col-12">
-                <div class="row">
-                    <h5>Total Keseluruhan</h5>
-                    <div class="col-6 col-lg-3 col-md-6">
-                        <div class="card">
-                            <div class="card-body px-4 py-4-5">
-                                <div class="d-flex" style="gap: 10px;">
-                                    <div class="stats-icon green">
-                                        <i class="iconly-boldShow"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="text-muted font-semibold">Mahasiswa Aktif</h6>
-                                        <h6 class="font-extrabold mb-0">{{ $JumMhsTotal->Total_Mahasiswa_Aktif }}</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3 col-md-6">
-                        <div class="card">
-                            <div class="card-body px-4 py-4-5">
-                                <div class="d-flex" style="gap: 10px;">
-                                    <div class="stats-icon bg-warning">
-                                        <i class="iconly-boldShow"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="text-muted font-semibold">Mahasiswa Cuti</h6>
-                                        <h6 class="font-extrabold mb-0">{{ $JumMhsTotal->Total_Mahasiswa_Cuti }}</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3 col-md-6">
-                        <div class="card">
-                            <div class="card-body px-4 py-4-5">
-                                <div class="d-flex" style="gap: 10px;">
-                                    <div class="stats-icon bg-secondary">
-                                        <i class="iconly-boldShow"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="text-muted font-semibold">Mahasiswa Non Aktif</h6>
-                                        <h6 class="font-extrabold mb-0">{{ $JumMhsTotal->Total_Mahasiswa_NonAktif }}</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3 col-md-6">
-                        <div class="card">
-                            <div class="card-body px-4 py-4-5">
-                                <div class="d-flex" style="gap: 10px;">
-                                    <div class="stats-icon purple">
-                                        <i class="iconly-boldShow"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="text-muted font-semibold">Total Mahasiswa</h6>
-                                        <h6 class="font-extrabold mb-0">{{ $JumMhsTotal->TotalMahasiswa }}</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
-                                <h4>Total Mahasiswa Per-Tahun</h4>
-                                <p class="p-0 m-0 mt-1">Mahasiswa Aktif, Mahasiswa Non Aktif, dan Total Mahasiswa</p>
+                            <div class="card-header d-flex justify-content-between">
+                                <div class="wrapper-left">
+                                    <h4>Total Mahasiswa Per-Fakultas</h4>
+                                    <p class="p-0 m-0 mt-1">Mahasiswa Aktif, Mahasiswa Non Aktif, dan Total Mahasiswa</p>
+                                </div>
+                                <div class="wrapper-right">
+                                    <h4>{{ $JumMhsTotal->TotalMahasiswa }}</h4>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div id="MahasiswaPertahun" data-jum-mhs-total-per-tahun='@json($JumMhsTotalPerTahun)'>

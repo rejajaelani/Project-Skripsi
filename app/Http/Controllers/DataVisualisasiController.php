@@ -129,6 +129,7 @@ class DataVisualisasiController extends Controller
         return view('dashboard', [
             'pages_active' => 'dashboard',
             'isActiveMenu' => false,
+            'User' => $user,
             'HakAkses' => $hak_akses_selected,
             'UserAkses' => $user->hak_akses,
             'ListProdi' => $ListProdi,

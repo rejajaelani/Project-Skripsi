@@ -52,41 +52,45 @@
                             </a>
                         </li>
 
-                        <li class="sidebar-item  has-sub {{ $isActiveMenu == true ? 'active' : '' }}">
-                            <a href="#" class='sidebar-link'>
-                                <i class="bi bi-people-fill"></i>
-                                <span>Data Mahasiswa</span>
-                            </a>
-                            <ul class="submenu {{ $isActiveMenu == true ? 'active' : '' }}">
-                                <li class="submenu-item {{ $pages_active == 'data-krs' ? 'active' : '' }}">
-                                    <a href="{{ route('data-krs') }}" class="d-flex align-items-center"
-                                        style="gap: 15px;"><i class="bi bi-circle mb-2"></i><span>Data
-                                            KRS</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            Aktivitas Mahasiswa</span></a>
-                                </li>
-                                <li class="submenu-item ">
-                                    <a href="#" class="d-flex align-items-center" style="gap: 15px;"><i
-                                            class="bi bi-circle mb-2"></i><span>Data
-                                            Kelulusan dan DO</span></a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="sidebar-item {{ $pages_active == 'data-kelas-perkuliahan' ? 'active' : '' }}">
-                            <a href="{{ route('data-kelas-perkuliahan') }}" class='sidebar-link'>
-                                <i class="bi bi-bookmarks-fill"></i>
-                                <span>Data Kelas Perkuliahan</span>
+                        <li class="sidebar-item {{ $pages_active == 'kelas-perkuliahan' ? 'active' : '' }}">
+                            <a href="" class='sidebar-link'>
+                                <i class="bi bi-briefcase-fill"></i>
+                                <span>Kelas Perkuliahan</span>
                             </a>
                         </li>
 
-                        <li class="sidebar-item {{ $pages_active == 'data-beban-dosen' ? 'active' : '' }}">
-                            <a href="{{ route('data-beban-dosen') }}" class='sidebar-link'>
-                                <i class="bi bi-mortarboard-fill"></i>
-                                <span>Data Beban Dosen</span>
+                        <li class="sidebar-item {{ $pages_active == 'krs' ? 'active' : '' }}">
+                            <a href="" class='sidebar-link'>
+                                <i class="bi bi-credit-card-2-front-fill"></i>
+                                <span>KRS</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item {{ $pages_active == 'akm' ? 'active' : '' }}">
+                            <a href="" class='sidebar-link'>
+                                <i class="bi bi-grid-fill"></i>
+                                <span>AKM</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item {{ $pages_active == 'aktivitas-mahasiswa' ? 'active' : '' }}">
+                            <a href="" class='sidebar-link'>
+                                <i class="bi bi-card-heading"></i>
+                                <span>Aktivitas Mahasiswa</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item {{ $pages_active == 'kelulusan-do' ? 'active' : '' }}">
+                            <a href="" class='sidebar-link'>
+                                <i class="bi bi-calendar-check-fill"></i>
+                                <span>Kelulusan / DO</span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item {{ $pages_active == 'beban-dosen' ? 'active' : '' }}">
+                            <a href="" class='sidebar-link'>
+                                <i class="bi bi-ethernet"></i>
+                                <span>Beban Dosen</span>
                             </a>
                         </li>
 
