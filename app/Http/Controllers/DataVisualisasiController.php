@@ -553,4 +553,90 @@ class DataVisualisasiController extends Controller
     //         'ListFakultas' => $ListFakultas,
     //     ])
     // }
+
+    public function Visualisasi_KelasPerkuliahan(Request $request)
+    {
+        $user = $this->getUserActive();
+        $hak_akses_selected = $request->akses ?? $user->hak_akses;
+        $semester_selected = $request->semester ?? 20231;
+        $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
+        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
+    
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+        }
+    
+        $queryTotalKelasPerkuliahan = "SELECT COUNT(id_kelas_kuliah) AS Total 
+        FROM tbgetlistkelaskuliah 
+        WHERE id_semester = ?";
+    
+        $queryTotalKelasPerkuliahanNULL = "SELECT COUNT(id_kelas_kuliah) AS Total 
+        FROM tbgetlistkelaskuliah 
+        WHERE id_semester = ? AND nama_dosen IS NULL";
+    
+        $queryTotalKelasPerkuliahanPerProdi = [];
+    
+        foreach ($ListProdi as $prodi) {
+            $queryTotalKelasPerkuliahanPerProdi[$prodi->id_prodi] = "SELECT REPLACE(nama_program_studi, 'S1 ', '') AS NamaProdi, COUNT(id_kelas_kuliah) AS Total 
+            FROM tbgetlistkelaskuliah 
+            WHERE id_semester = ? AND id_prodi = '{$prodi->id_prodi}' GROUP BY nama_program_studi ORDER BY nama_program_studi ASC";
+        }
+    
+        $queryListKelasPerkuliahanNULL = "SELECT nama_mata_kuliah AS NamaMatkul, 
+            kode_mata_kuliah AS KodeMatkul, 
+            nama_kelas_kuliah AS Kelas, 
+            sks AS JumlahSKS, 
+            nama_dosen AS NamaDosen
+            FROM tbgetlistkelaskuliah 
+            WHERE id_semester = ? AND nama_dosen IS NULL";
+    
+        if ($hak_akses_selected !== 'All Data') {
+            $queryTotalKelasPerkuliahan .= " AND id_prodi = ?";
+            $queryTotalKelasPerkuliahanNULL .= " AND id_prodi = ?";
+            $queryListKelasPerkuliahanNULL .= " AND id_prodi = ?";
+        }
+    
+        $queryListKelasPerkuliahanNULL .= " ORDER BY nama_mata_kuliah ASC";
+    
+        if ($hak_akses_selected !== 'All Data') {
+            $TotalKelasPerkuliahan = DB::select($queryTotalKelasPerkuliahan, [$semester_selected, $hak_akses_selected]);
+            $TotalKelasPerkuliahanNULL = DB::select($queryTotalKelasPerkuliahanNULL, [$semester_selected, $hak_akses_selected]);
+            $ListKelasPerkuliahanNULL = DB::select($queryListKelasPerkuliahanNULL, [$semester_selected, $hak_akses_selected]);
+        } else {
+            $TotalKelasPerkuliahan = DB::select($queryTotalKelasPerkuliahan, [$semester_selected]);
+            $TotalKelasPerkuliahanNULL = DB::select($queryTotalKelasPerkuliahanNULL, [$semester_selected]);
+            $ListKelasPerkuliahanNULL = DB::select($queryListKelasPerkuliahanNULL, [$semester_selected]);
+        }
+    
+        $ListTotalKelasPerkuliahanPerProdi = [];
+    
+        foreach ($ListProdi as $prodi) {
+            $result = DB::select($queryTotalKelasPerkuliahanPerProdi[$prodi->id_prodi], [$semester_selected]);
+            if (empty($result)) {
+                $ListTotalKelasPerkuliahanPerProdi[] = (object) [
+                    'NamaProdi' => str_replace('S1 ', '', $prodi->nama_program_studi),
+                    'Total' => 0,
+                ];
+            } else {
+                $ListTotalKelasPerkuliahanPerProdi[] = $result[0];
+            }
+        }
+    
+        return view('pages/kelas-perkuliahan', [
+            'User' => $user,
+            'pages_active' => 'kelas-perkuliahan',
+            'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $hak_akses_selected,
+            'SelectedSemester' => $semester_selected,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
+            'TotalKelasPerkuliahan' => $TotalKelasPerkuliahan,
+            'TotalKelasPerkuliahanNULL' => $TotalKelasPerkuliahanNULL,
+            'ListKelasPerkuliahanNULL' => $ListKelasPerkuliahanNULL,
+            'ListTotalKelasPerkuliahanPerProdi' => $ListTotalKelasPerkuliahanPerProdi,
+        ]);
+    }
+    
+       
+    
 }

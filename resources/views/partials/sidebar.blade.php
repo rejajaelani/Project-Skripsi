@@ -53,7 +53,7 @@
                         </li>
 
                         <li class="sidebar-item {{ $pages_active == 'kelas-perkuliahan' ? 'active' : '' }}">
-                            <a href="" class='sidebar-link'>
+                            <a href="{{ route('kelas-perkuliahan') }}" class='sidebar-link'>
                                 <i class="bi bi-briefcase-fill"></i>
                                 <span>Kelas Perkuliahan</span>
                             </a>
