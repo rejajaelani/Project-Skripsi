@@ -172,388 +172,6 @@ class DataVisualisasiController extends Controller
         ]);
     }
 
-    public function Visualisasi_DataBebanDosen(Request $request)
-    {
-        $user = $this->getUserActive();
-        $HakAkses = $this->getHakAksesUser($request->select_data);
-
-        $hak_akses_selected = $request->input('hak_akses', $user->hak_akses);
-        $Semester_selected = $request->input('semester', 20231);
-
-        $ListProdi = DB::select('SELECT * FROM tbgetprodi');
-        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
-
-        // $DosenAktif = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE id_status_aktif = 1');
-        $whereProgramStudi = $hak_akses_selected !== 'Admin' ? "amd.nama_program_studi = '$hak_akses_selected' AND" : "";
-
-        $DosenAktif = DB::select("
-        SELECT 
-            COUNT(*) AS TotalDosen
-        FROM (
-            SELECT 
-                COUNT(ld.id_dosen) AS JumlahDosen
-            FROM 
-                tbgetlistdosen ld 
-            LEFT JOIN 
-                tbgetaktivitasmengajardosen amd 
-            ON 
-                ld.id_dosen = amd.id_dosen 
-            AND 
-                amd.id_periode = ? 
-            WHERE 
-                $whereProgramStudi 
-                ld.id_status_aktif = 1
-            GROUP BY 
-                ld.id_dosen, ld.nama_dosen
-        ) AS subquery;", [$Semester_selected]);
-
-        $DosenTidakAktif = DB::select("
-        SELECT 
-            COUNT(*) AS TotalDosen
-        FROM (
-            SELECT 
-                COUNT(ld.id_dosen) AS JumlahDosen
-            FROM 
-                tbgetlistdosen ld 
-            LEFT JOIN 
-                tbgetaktivitasmengajardosen amd 
-            ON 
-                ld.id_dosen = amd.id_dosen 
-            AND 
-                amd.id_periode = ? 
-            WHERE 
-                $whereProgramStudi 
-                ld.id_status_aktif = 2
-            GROUP BY 
-                ld.id_dosen, ld.nama_dosen
-        ) AS subquery;", [$Semester_selected]);
-
-        //$DosenTidakAktif = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE id_status_aktif = 2');
-        $DosenIjin = DB::select("SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen WHERE nama_status_aktif LIKE '%IJIN%'");
-        $TotalDosen = DB::select('SELECT COUNT(id) AS TotalDosen FROM tbgetlistdosen');
-
-        $ListDosen = DB::select("SELECT 
-            ld.id_dosen, 
-            ld.nama_dosen AS Nama_Dosen, 
-            COALESCE(COUNT(amd.nama_mata_kuliah), 0) AS Jumlah_Mengajar_Kelas, 
-            COALESCE(SUM(amd.rencana_minggu_pertemuan), ' - ') AS Rencana_Pertemuan, 
-            COALESCE(SUM(amd.realisasi_minggu_pertemuan), ' - ') AS Realisasi_Pertemuan
-        FROM 
-            tbgetlistdosen ld 
-        LEFT JOIN 
-            tbgetaktivitasmengajardosen amd 
-        ON 
-            ld.id_dosen = amd.id_dosen 
-        AND 
-            amd.id_periode = 20231 
-        GROUP BY 
-            ld.id_dosen, ld.nama_dosen
-        ORDER BY 
-            ld.nama_dosen ASC;");
-
-        $ListDosenAktif = DB::select("SELECT 
-            ld.id_dosen, 
-            ld.nama_dosen AS Nama_Dosen, 
-            COALESCE(COUNT(amd.nama_mata_kuliah), 0) AS Jumlah_Mengajar_Kelas, 
-            COALESCE(SUM(amd.rencana_minggu_pertemuan), ' - ') AS Rencana_Pertemuan, 
-            COALESCE(SUM(amd.realisasi_minggu_pertemuan), ' - ') AS Realisasi_Pertemuan
-        FROM 
-            tbgetlistdosen ld 
-        LEFT JOIN 
-            tbgetaktivitasmengajardosen amd 
-        ON 
-            ld.id_dosen = amd.id_dosen 
-        AND 
-            amd.id_periode = 20231 
-        WHERE
-            ld.nama_status_aktif = 'Aktif'
-        GROUP BY 
-            ld.id_dosen, ld.nama_dosen
-        ORDER BY 
-            ld.nama_dosen ASC;");
-
-        $ListDosenTidakAktif = DB::select("SELECT 
-            ld.id_dosen, 
-            ld.nama_dosen AS Nama_Dosen, 
-            COALESCE(COUNT(amd.nama_mata_kuliah), 0) AS Jumlah_Mengajar_Kelas, 
-            COALESCE(SUM(amd.rencana_minggu_pertemuan), ' - ') AS Rencana_Pertemuan, 
-            COALESCE(SUM(amd.realisasi_minggu_pertemuan), ' - ') AS Realisasi_Pertemuan
-        FROM 
-            tbgetlistdosen ld 
-        LEFT JOIN 
-            tbgetaktivitasmengajardosen amd 
-        ON 
-            ld.id_dosen = amd.id_dosen 
-        AND 
-            amd.id_periode = 20231 
-        WHERE 
-            ld.nama_status_aktif	= 'Tidak Aktif'
-        GROUP BY 
-            ld.id_dosen, ld.nama_dosen
-        ORDER BY 
-            ld.nama_dosen ASC;");
-
-        $ListDosenIjin = DB::select("SELECT 
-            ld.id_dosen, 
-            ld.nama_dosen AS Nama_Dosen, 
-            COALESCE(COUNT(amd.nama_mata_kuliah), 0) AS Jumlah_Mengajar_Kelas, 
-            COALESCE(SUM(amd.rencana_minggu_pertemuan), ' - ') AS Rencana_Pertemuan, 
-            COALESCE(SUM(amd.realisasi_minggu_pertemuan), ' - ') AS Realisasi_Pertemuan
-        FROM 
-            tbgetlistdosen ld 
-        LEFT JOIN 
-            tbgetaktivitasmengajardosen amd 
-        ON 
-            ld.id_dosen = amd.id_dosen 
-        AND 
-            amd.id_periode = 20231 
-        WHERE 
-            ld.nama_status_aktif LIKE '%Ijin%'
-        GROUP BY 
-            ld.id_dosen, ld.nama_dosen
-        ORDER BY 
-            ld.nama_dosen ASC;");
-
-        $TotalDosenCowok = DB::table('tbgetlistdosen')
-            ->where('jenis_kelamin', 'L')
-            ->count();
-
-        $TotalDosenCewek = DB::table('tbgetlistdosen')
-            ->where('jenis_kelamin', 'P')
-            ->count();
-
-        return view('pages/data-beban-dosen', [
-            'pages_active' => 'data-beban-dosen',
-            'isActiveMenu' => false,
-            'HakAkses' => $user->hak_akses,
-            'SelectedAkses' => $hak_akses_selected,
-            'ListProdi' => $ListProdi,
-            'ListFakultas' => $ListFakultas,
-            'DosenAktif' => $DosenAktif,
-            'DosenTidakAktif' => $DosenTidakAktif,
-            'DosenIjin' => $DosenIjin,
-            'TotalDosen' => $TotalDosen,
-            'ListDosen' => $ListDosen,
-            'ListDosenAktif' => $ListDosenAktif,
-            'ListDosenTidakAktif' => $ListDosenTidakAktif,
-            'ListDosenIjin' => $ListDosenIjin,
-            'TotalDosenCowok' => $TotalDosenCowok,
-            'TotalDosenCewek' => $TotalDosenCewek,
-        ]);
-    }
-
-    public function Visualisasi_DataKelasPerkuliahan(Request $request)
-    {
-        $user = $this->getUserActive();
-        $HakAkses = $this->getHakAksesUser($request->select_data);
-
-        $hak_akses_selected = $request->select_data ?? $user->hak_akses;
-
-        $ListProdi = DB::select('SELECT * FROM tbgetprodi');
-        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
-
-        $TotalMatkulWajib = DB::select("SELECT COUNT(id) AS TotalMatkul
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah = 'Wajib'");
-
-        $TotalMatkulWajibPeminatan = DB::select("SELECT COUNT(id) AS TotalMatkul
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah = 'Wajib Peminatan'");
-
-        $TotalMatkulPilihan = DB::select("SELECT COUNT(id) AS TotalMatkul
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah = 'Pilihan'");
-
-        $TotalMatkulTA = DB::select("SELECT COUNT(id) AS TotalMatkul
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah = 'Tugas akhir/ Skripsi/ Thesis/ Disertasi'");
-
-        $TotalMatkulNULL = DB::select("SELECT COUNT(id) AS TotalMatkul
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah IS NULL");
-
-        $TotalMatkul = DB::select("SELECT COUNT(id) AS TotalMatkul
-        FROM tbgetlistmatakuliah");
-
-        $ListKelasPerkuliahan = DB::select("SELECT  nama_mata_kuliah AS NamaMatkul, 
-        kode_mata_kuliah AS KodeMatkul, 
-        nama_kelas_kuliah AS Kelas, 
-        sks AS JumlahSKS, 
-        nama_dosen AS NamaDosen
-        FROM tbgetlistkelaskuliah 
-        WHERE id_semester IN ('20231','20232') 
-        ORDER BY nama_mata_kuliah ASC");
-
-        $ListKelasPerkuliahanNULL = DB::select("SELECT  nama_mata_kuliah AS NamaMatkul, 
-        kode_mata_kuliah AS KodeMatkul, 
-        nama_kelas_kuliah AS Kelas, 
-        sks AS JumlahSKS, 
-        nama_dosen AS NamaDosen
-        FROM tbgetlistkelaskuliah 
-        WHERE id_semester IN ('20231','20232') AND nama_dosen IS NULL 
-        ORDER BY nama_mata_kuliah ASC");
-
-        $TotalKelas = DB::select("SELECT  COUNT(nama_mata_kuliah) AS TotalKelas
-        FROM tbgetlistkelaskuliah 
-        WHERE id_semester IN ('20232')");
-
-        $TotalKelasNULL = DB::select("SELECT  COUNT(nama_mata_kuliah) AS TotalKelas
-        FROM tbgetlistkelaskuliah 
-        WHERE id_semester IN ('20232') AND nama_dosen IS NULL");
-
-        $ListMataKuliahWajib = DB::select("SELECT  nama_mata_kuliah AS NamaMatkul, 
-        kode_mata_kuliah AS KodeMatkul,
-        nama_program_studi AS NamaStudi, 
-        IFNULL(sks_tatap_muka, 0.00) AS MateriSKS, 
-        IFNULL(sks_praktek, 0.00) AS PraktekSKS, 
-        IFNULL(sks_praktek_lapangan, 0.00) AS PraktekLapanganSKS, 
-        IFNULL(sks_simulasi, 0.00) AS SimulasiSKS,  
-        IFNULL(sks_mata_kuliah, 0.00) AS JumlahSKS
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah = 'Wajib' 
-        ORDER BY nama_mata_kuliah ASC");
-
-        $ListMataKuliahWajibPeminatan = DB::select("SELECT  nama_mata_kuliah AS NamaMatkul, 
-        kode_mata_kuliah AS KodeMatkul,
-        nama_program_studi AS NamaStudi, 
-        IFNULL(sks_tatap_muka, 0.00) AS MateriSKS, 
-        IFNULL(sks_praktek, 0.00) AS PraktekSKS, 
-        IFNULL(sks_praktek_lapangan, 0.00) AS PraktekLapanganSKS, 
-        IFNULL(sks_simulasi, 0.00) AS SimulasiSKS,  
-        IFNULL(sks_mata_kuliah, 0.00) AS JumlahSKS
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah = 'Wajib Peminatan' 
-        ORDER BY nama_mata_kuliah ASC");
-
-        $ListMataKuliahPilihan = DB::select("SELECT  nama_mata_kuliah AS NamaMatkul, 
-        kode_mata_kuliah AS KodeMatkul,
-        nama_program_studi AS NamaStudi, 
-        IFNULL(sks_tatap_muka, 0.00) AS MateriSKS, 
-        IFNULL(sks_praktek, 0.00) AS PraktekSKS, 
-        IFNULL(sks_praktek_lapangan, 0.00) AS PraktekLapanganSKS, 
-        IFNULL(sks_simulasi, 0.00) AS SimulasiSKS,  
-        IFNULL(sks_mata_kuliah, 0.00) AS JumlahSKS
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah = 'Pilihan' 
-        ORDER BY nama_mata_kuliah ASC");
-
-        $ListMataKuliahTA = DB::select("SELECT  nama_mata_kuliah AS NamaMatkul, 
-        kode_mata_kuliah AS KodeMatkul,
-        nama_program_studi AS NamaStudi, 
-        IFNULL(sks_tatap_muka, 0.00) AS MateriSKS, 
-        IFNULL(sks_praktek, 0.00) AS PraktekSKS, 
-        IFNULL(sks_praktek_lapangan, 0.00) AS PraktekLapanganSKS, 
-        IFNULL(sks_simulasi, 0.00) AS SimulasiSKS,  
-        IFNULL(sks_mata_kuliah, 0.00) AS JumlahSKS
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah = 'Tugas akhir/ Skripsi/ Thesis/ Disertasi' 
-        ORDER BY nama_mata_kuliah ASC");
-
-        $ListMataKuliahNULL = DB::select("SELECT  nama_mata_kuliah AS NamaMatkul, 
-        kode_mata_kuliah AS KodeMatkul,
-        nama_program_studi AS NamaStudi, 
-        IFNULL(sks_tatap_muka, 0.00) AS MateriSKS, 
-        IFNULL(sks_praktek, 0.00) AS PraktekSKS, 
-        IFNULL(sks_praktek_lapangan, 0.00) AS PraktekLapanganSKS, 
-        IFNULL(sks_simulasi, 0.00) AS SimulasiSKS,  
-        IFNULL(sks_mata_kuliah, 0.00) AS JumlahSKS
-        FROM tbgetlistmatakuliah 
-        WHERE nama_jenis_mata_kuliah IS NULL 
-        ORDER BY nama_mata_kuliah ASC");
-
-        $ListTotalMataKuliah = DB::select("SELECT  nama_mata_kuliah AS NamaMatkul, 
-        kode_mata_kuliah AS KodeMatkul,
-        nama_program_studi AS NamaStudi, 
-        IFNULL(sks_tatap_muka, 0.00) AS MateriSKS, 
-        IFNULL(sks_praktek, 0.00) AS PraktekSKS, 
-        IFNULL(sks_praktek_lapangan, 0.00) AS PraktekLapanganSKS, 
-        IFNULL(sks_simulasi, 0.00) AS SimulasiSKS,  
-        IFNULL(sks_mata_kuliah, 0.00) AS JumlahSKS
-        FROM tbgetlistmatakuliah 
-        ORDER BY nama_mata_kuliah ASC");
-
-        return view('pages/data-kelas-perkuliahan', [
-            'pages_active' => 'data-kelas-perkuliahan',
-            'isActiveMenu' => false,
-            'HakAkses' => $user->hak_akses,
-            'SelectedAkses' => $hak_akses_selected,
-            'ListProdi' => $ListProdi,
-            'ListFakultas' => $ListFakultas,
-            'TotalMatkulWajib' => $TotalMatkulWajib,
-            'TotalMatkulWajibPeminatan' => $TotalMatkulWajibPeminatan,
-            'TotalMatkulPilihan' => $TotalMatkulPilihan,
-            'TotalMatkulTA' => $TotalMatkulTA,
-            'TotalMatkulNULL' => $TotalMatkulNULL,
-            'TotalMatkul' => $TotalMatkul,
-            'ListKelasPerkuliahan' => $ListKelasPerkuliahan,
-            'ListKelasPerkuliahanNULL' => $ListKelasPerkuliahanNULL,
-            'TotalKelas' => $TotalKelas,
-            'TotalKelasNULL' => $TotalKelasNULL,
-            'ListMataKuliahWajib' => $ListMataKuliahWajib,
-            'ListMataKuliahWajibPeminatan' => $ListMataKuliahWajibPeminatan,
-            'ListMataKuliahPilihan' => $ListMataKuliahPilihan,
-            'ListMataKuliahTA' => $ListMataKuliahTA,
-            'ListMataKuliahNULL' => $ListMataKuliahNULL,
-            'ListTotalMataKuliah' => $ListTotalMataKuliah
-        ]);
-    }
-
-    public function Visualisasi_DataBebanDosenDetail(Request $request)
-    {
-        $encryptedId = $request->input('id');
-        $id = Crypt::decrypt($encryptedId);
-        $user = $this->getUserActive();
-
-        // Ambil data dari database berdasarkan ID
-        $DataDosen = DB::table('tbgetlistdosen')->where('id_dosen', $id)->first();
-
-        $ListKelasDiajar = DB::select("SELECT 
-            mk.id_matkul AS IdMatkul, 
-            mk.nama_mata_kuliah AS NamaMatkul,  
-            mk.kode_mata_kuliah AS KodeMatkul, 
-            mk.nama_program_studi AS NamaProdi, 
-            amd.nama_kelas_kuliah AS Kelas, 
-            mk.sks_mata_kuliah AS JumlahSKS, 
-            amd.rencana_minggu_pertemuan AS RencanaPertemuan, 
-            amd.realisasi_minggu_pertemuan AS RealisasiPertemuan 
-        FROM tbgetaktivitasmengajardosen amd 
-        LEFT JOIN tbgetlistmatakuliah mk ON amd.id_matkul = mk.id_matkul 
-        WHERE amd.id_dosen = ?", [$id]);
-
-        $ListMahasiswaBimbingan = DB::select("SELECT  lm.nama_mahasiswa AS NamaMahasiswa, 
-            lm.nim AS Nim, 
-            lm.nama_program_studi AS ProdiMahasiswa, 
-            dp.nama_dosen AS NamaDosen, 
-            dp.pembimbing_ke AS PembimbingKe, 
-            dp.jenis_aktivitas AS AktivitasBimbingan
-        FROM tbgetdosenpembimbing dp 
-        LEFT JOIN tbgetlistmahasiswa lm ON dp.id_registrasi_mahasiswa = lm.id_registrasi_mahasiswa 
-        WHERE lm.id_periode = '20231' AND dp.id_dosen = ?", [$id]);
-
-        // Kembalikan data sebagai JSON
-        return view('pages/detail-data-beban-dosen', [
-            'pages_active' => 'data-beban-dosen',
-            'isActiveMenu' => false,
-            'HakAkses' => $user->hak_akses,
-            'DataDosen' => $DataDosen,
-            'ListKelasDiajar' => $ListKelasDiajar,
-            'ListMahasiswaBimbingan' => $ListMahasiswaBimbingan
-        ]);
-    }
-
-
-    // public function Visualisasi_DataKRS()
-    // {
-    //     return view(, [
-    //         'pages_active' => 'data-beban-dosen',
-    //         'isActiveMenu' => false,
-    //         'HakAkses' => $user->hak_akses,
-    //         'SelectedAkses' => $hak_akses_selected,
-    //         'ListProdi' => $ListProdi,
-    //         'ListFakultas' => $ListFakultas,
-    //     ])
-    // }
-
     public function Visualisasi_KelasPerkuliahan(Request $request)
     {
         $user = $this->getUserActive();
@@ -561,27 +179,39 @@ class DataVisualisasiController extends Controller
         $semester_selected = $request->semester ?? 20231;
         $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
         $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
-
+    
         if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
             $hak_akses_selected = 'All Data';
         }
-
+    
         $queryTotalKelasPerkuliahan = "SELECT COUNT(id_kelas_kuliah) AS Total 
         FROM tbgetlistkelaskuliah 
         WHERE id_semester = ?";
-
+    
         $queryTotalKelasPerkuliahanNULL = "SELECT COUNT(id_kelas_kuliah) AS Total 
         FROM tbgetlistkelaskuliah 
         WHERE id_semester = ? AND nama_dosen IS NULL";
-
+    
         $queryTotalKelasPerkuliahanPerProdi = [];
-
+        $queryListKelasPerkuliahanPerProdi = [];
+    
         foreach ($ListProdi as $prodi) {
             $queryTotalKelasPerkuliahanPerProdi[$prodi->id_prodi] = "SELECT id_prodi AS IdProdi, REPLACE(nama_program_studi, 'S1 ', '') AS NamaProdi, COUNT(id_kelas_kuliah) AS Total 
             FROM tbgetlistkelaskuliah 
             WHERE id_semester = ? AND id_prodi = '{$prodi->id_prodi}' GROUP BY id_prodi, nama_program_studi ORDER BY nama_program_studi ASC";
+    
+            // Perulangan untuk mengambil data kelas per prodi
+            $queryListKelasPerkuliahanPerProdi[$prodi->id_prodi] = DB::select(
+                "SELECT nama_mata_kuliah AS NamaMatkul, 
+                kode_mata_kuliah AS KodeMatkul, 
+                nama_kelas_kuliah AS Kelas, 
+                sks AS JumlahSKS, 
+                nama_dosen AS NamaDosen
+                FROM tbgetlistkelaskuliah 
+                WHERE id_semester = ? AND id_prodi = ? ORDER BY nama_program_studi ASC", [$semester_selected, $prodi->id_prodi]
+            );
         }
-
+    
         $queryListKelasPerkuliahan = "SELECT nama_mata_kuliah AS NamaMatkul, 
             kode_mata_kuliah AS KodeMatkul, 
             nama_kelas_kuliah AS Kelas, 
@@ -597,17 +227,16 @@ class DataVisualisasiController extends Controller
             nama_dosen AS NamaDosen
             FROM tbgetlistkelaskuliah 
             WHERE id_semester = ? AND nama_dosen IS NULL";
-
+    
         if ($hak_akses_selected !== 'All Data') {
             $queryTotalKelasPerkuliahan .= " AND id_prodi = ?";
             $queryTotalKelasPerkuliahanNULL .= " AND id_prodi = ?";
             $queryListKelasPerkuliahan .= " AND id_prodi = ?";
             $queryListKelasPerkuliahanNULL .= " AND id_prodi = ?";
         }
-
-        $queryListKelasPerkuliahan .= " ORDER BY nama_mata_kuliah ASC";
+    
         $queryListKelasPerkuliahanNULL .= " ORDER BY nama_mata_kuliah ASC";
-
+    
         if ($hak_akses_selected !== 'All Data') {
             $TotalKelasPerkuliahan = DB::select($queryTotalKelasPerkuliahan, [$semester_selected, $hak_akses_selected]);
             $TotalKelasPerkuliahanNULL = DB::select($queryTotalKelasPerkuliahanNULL, [$semester_selected, $hak_akses_selected]);
@@ -619,22 +248,23 @@ class DataVisualisasiController extends Controller
             $ListKelasPerkuliahan = DB::select($queryListKelasPerkuliahan, [$semester_selected]);
             $ListKelasPerkuliahanNULL = DB::select($queryListKelasPerkuliahanNULL, [$semester_selected]);
         }
-
+    
         $ListTotalKelasPerkuliahanPerProdi = [];
-
+    
         foreach ($ListProdi as $prodi) {
-            $result = DB::select($queryTotalKelasPerkuliahanPerProdi[$prodi->id_prodi], [$semester_selected]);
-            if (empty($result)) {
-                $ListTotalKelasPerkuliahanPerProdi[] = (object) [
-                    'IdProdi' => 0,
-                    'NamaProdi' => str_replace('S1 ', '', $prodi->nama_program_studi),
-                    'Total' => 0,
-                ];
-            } else {
-                $ListTotalKelasPerkuliahanPerProdi[] = $result[0];
-            }
+            $resultTotal = DB::select($queryTotalKelasPerkuliahanPerProdi[$prodi->id_prodi], [$semester_selected]);
+            $resultKelas = $queryListKelasPerkuliahanPerProdi[$prodi->id_prodi];
+    
+            $ListTotalKelasPerkuliahanPerProdi[] = (object) [
+                'IdProdi' => $prodi->id_prodi,
+                'NamaProdi' => str_replace('S1 ', '', $prodi->nama_program_studi),
+                'Total' => empty($resultTotal) ? 0 : $resultTotal[0]->Total,
+                'ListKelas' => $resultKelas
+            ];
         }
 
+        //var_dump($ListTotalKelasPerkuliahanPerProdi).die();
+    
         return view('pages/kelas-perkuliahan', [
             'User' => $user,
             'pages_active' => 'kelas-perkuliahan',
@@ -651,4 +281,5 @@ class DataVisualisasiController extends Controller
             'ListTotalKelasPerkuliahanPerProdi' => $ListTotalKelasPerkuliahanPerProdi,
         ]);
     }
+    
 }
