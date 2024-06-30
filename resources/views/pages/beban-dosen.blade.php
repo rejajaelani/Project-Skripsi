@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('title-page')
-    <title>Empty Pages - Visualisasi Data Mahasiswa</title>
+    <title>Beban Dosen - Visualisasi Data Mahasiswa</title>
 @endsection
 
 @section('container-content')
@@ -9,7 +9,7 @@
         @if (session('user'))
             <div class="wrapper-head-titile">
                 <h3>Welcome back, <span style="text-transform: capitalize;">{{ session('user')['username'] }}</span></h3>
-                <p><strong>Dashboard/</strong></p>
+                <p><strong>Beban Dosen /</strong></p>
             </div>
             {{-- {{ dd(session('user')) }} --}}
         @else
@@ -32,8 +32,8 @@
                                 </option>
                                 <!-- @foreach ($ListFakultas as $fakultas)
     <option value="{{ $fakultas->nama_fakultas }}" {{ $SelectedAkses == $fakultas->nama_fakultas ? 'selected' : '' }}>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $fakultas->nama_fakultas }}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </option>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $fakultas->nama_fakultas }}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </option>
     @endforeach -->
                                 @foreach ($ListProdi as $prodi)
                                     <option value="{{ $prodi->id_prodi }}"

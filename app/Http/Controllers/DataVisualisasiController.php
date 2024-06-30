@@ -151,6 +151,7 @@ class DataVisualisasiController extends Controller
         $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
 
         return view('user', [
+            'User' => $user,
             'pages_active' => 'user',
             'isActiveMenu' => false,
             'HakAkses' => $user->hak_akses,
@@ -166,6 +167,7 @@ class DataVisualisasiController extends Controller
         $user = $this->getUserActive();
 
         return view('pages/data-sync', [
+            'User' => $user,
             'pages_active' => 'data-sync',
             'isActiveMenu' => false,
             'HakAkses' => $user->hak_akses,
@@ -179,27 +181,27 @@ class DataVisualisasiController extends Controller
         $semester_selected = $request->semester ?? 20231;
         $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
         $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
-    
+
         if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
             $hak_akses_selected = 'All Data';
         }
-    
+
         $queryTotalKelasPerkuliahan = "SELECT COUNT(id_kelas_kuliah) AS Total 
         FROM tbgetlistkelaskuliah 
         WHERE id_semester = ?";
-    
+
         $queryTotalKelasPerkuliahanNULL = "SELECT COUNT(id_kelas_kuliah) AS Total 
         FROM tbgetlistkelaskuliah 
         WHERE id_semester = ? AND nama_dosen IS NULL";
-    
+
         $queryTotalKelasPerkuliahanPerProdi = [];
         $queryListKelasPerkuliahanPerProdi = [];
-    
+
         foreach ($ListProdi as $prodi) {
             $queryTotalKelasPerkuliahanPerProdi[$prodi->id_prodi] = "SELECT id_prodi AS IdProdi, REPLACE(nama_program_studi, 'S1 ', '') AS NamaProdi, COUNT(id_kelas_kuliah) AS Total 
             FROM tbgetlistkelaskuliah 
             WHERE id_semester = ? AND id_prodi = '{$prodi->id_prodi}' GROUP BY id_prodi, nama_program_studi ORDER BY nama_program_studi ASC";
-    
+
             // Perulangan untuk mengambil data kelas per prodi
             $queryListKelasPerkuliahanPerProdi[$prodi->id_prodi] = DB::select(
                 "SELECT nama_mata_kuliah AS NamaMatkul, 
@@ -208,10 +210,11 @@ class DataVisualisasiController extends Controller
                 sks AS JumlahSKS, 
                 nama_dosen AS NamaDosen
                 FROM tbgetlistkelaskuliah 
-                WHERE id_semester = ? AND id_prodi = ? ORDER BY nama_program_studi ASC", [$semester_selected, $prodi->id_prodi]
+                WHERE id_semester = ? AND id_prodi = ? ORDER BY nama_program_studi ASC",
+                [$semester_selected, $prodi->id_prodi]
             );
         }
-    
+
         $queryListKelasPerkuliahan = "SELECT nama_mata_kuliah AS NamaMatkul, 
             kode_mata_kuliah AS KodeMatkul, 
             nama_kelas_kuliah AS Kelas, 
@@ -227,16 +230,16 @@ class DataVisualisasiController extends Controller
             nama_dosen AS NamaDosen
             FROM tbgetlistkelaskuliah 
             WHERE id_semester = ? AND nama_dosen IS NULL";
-    
+
         if ($hak_akses_selected !== 'All Data') {
             $queryTotalKelasPerkuliahan .= " AND id_prodi = ?";
             $queryTotalKelasPerkuliahanNULL .= " AND id_prodi = ?";
             $queryListKelasPerkuliahan .= " AND id_prodi = ?";
             $queryListKelasPerkuliahanNULL .= " AND id_prodi = ?";
         }
-    
+
         $queryListKelasPerkuliahanNULL .= " ORDER BY nama_mata_kuliah ASC";
-    
+
         if ($hak_akses_selected !== 'All Data') {
             $TotalKelasPerkuliahan = DB::select($queryTotalKelasPerkuliahan, [$semester_selected, $hak_akses_selected]);
             $TotalKelasPerkuliahanNULL = DB::select($queryTotalKelasPerkuliahanNULL, [$semester_selected, $hak_akses_selected]);
@@ -248,13 +251,13 @@ class DataVisualisasiController extends Controller
             $ListKelasPerkuliahan = DB::select($queryListKelasPerkuliahan, [$semester_selected]);
             $ListKelasPerkuliahanNULL = DB::select($queryListKelasPerkuliahanNULL, [$semester_selected]);
         }
-    
+
         $ListTotalKelasPerkuliahanPerProdi = [];
-    
+
         foreach ($ListProdi as $prodi) {
             $resultTotal = DB::select($queryTotalKelasPerkuliahanPerProdi[$prodi->id_prodi], [$semester_selected]);
             $resultKelas = $queryListKelasPerkuliahanPerProdi[$prodi->id_prodi];
-    
+
             $ListTotalKelasPerkuliahanPerProdi[] = (object) [
                 'IdProdi' => $prodi->id_prodi,
                 'NamaProdi' => str_replace('S1 ', '', $prodi->nama_program_studi),
@@ -264,7 +267,7 @@ class DataVisualisasiController extends Controller
         }
 
         //var_dump($ListTotalKelasPerkuliahanPerProdi).die();
-    
+
         return view('pages/kelas-perkuliahan', [
             'User' => $user,
             'pages_active' => 'kelas-perkuliahan',
@@ -281,5 +284,220 @@ class DataVisualisasiController extends Controller
             'ListTotalKelasPerkuliahanPerProdi' => $ListTotalKelasPerkuliahanPerProdi,
         ]);
     }
-    
+
+    public function Visualisasi_KelulusanDO(Request $request)
+    {
+        $user = $this->getUserActive();
+        $hak_akses_selected = $request->akses ?? $user->hak_akses;
+        $semester_selected = $request->semester ?? 20231;
+        $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
+        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
+        $ListJenisKeluar = DB::select('SELECT * FROM tbgetjeniskeluar ORDER BY id_jenis_keluar ASC');
+
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+        }
+
+        $queryTotalMahasiswaLulusDO = [];
+        $queryListMahasiswaLulusDO = [];
+
+        $whereProdiSelected = "";
+
+        if ($request->akses != "" && $request->akses != "All Data") {
+            $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
+        }
+
+        foreach ($ListJenisKeluar as $jenis) {
+            $queryTotalMahasiswaLulusDO[$jenis->id_jenis_keluar] = "SELECT  nama_jenis_keluar AS Jenis, 
+                COUNT(id) AS Total 
+            FROM tbgetlistmahasiswalulusdo 
+            WHERE id_jenis_keluar = '{$jenis->id_jenis_keluar}' {$whereProdiSelected} AND id_periode_keluar = {$semester_selected}
+            GROUP BY nama_jenis_keluar";
+
+            $queryListMahasiswaLulusDO[$jenis->id_jenis_keluar] = DB::select(
+                "SELECT  nim AS Nim, 
+                    nama_mahasiswa AS NamaMahasiswa, 
+                    nama_program_studi AS NamaProdi, 
+                    angkatan AS Angkatan, 
+                    nama_jenis_keluar AS JenisKeluar
+                FROM tbgetlistmahasiswalulusdo
+                WHERE id_periode_keluar = ? {$whereProdiSelected} AND id_jenis_keluar = ? ORDER BY nama_mahasiswa ASC",
+                [$semester_selected, $jenis->id_jenis_keluar]
+            );
+        }
+
+        $ListKelulusanDO = [];
+
+        foreach ($ListJenisKeluar as $jenis) {
+            $resultTotal = DB::select($queryTotalMahasiswaLulusDO[$jenis->id_jenis_keluar]);
+            $resultMahasiswa = $queryListMahasiswaLulusDO[$jenis->id_jenis_keluar];
+
+            $ListKelulusanDO[] = (object) [
+                'Jenis' => $jenis->jenis_keluar,
+                'Total' => empty($resultTotal) ? 0 : $resultTotal[0]->Total,
+                'ListMahasiswa' => $resultMahasiswa
+            ];
+        }
+
+        //var_dump($ListKelulusanDO) . die();
+
+        return view('pages/kelulusan-do', [
+            'User' => $user,
+            'pages_active' => 'kelulusan-do',
+            'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $hak_akses_selected,
+            'SelectedSemester' => $semester_selected,
+            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
+            'ListJenisKeluar' => $ListJenisKeluar,
+            'ListKelulusanDO' => $ListKelulusanDO
+        ]);
+    }
+
+    public function Visualisasi_AKM(Request $request)
+    {
+        $user = $this->getUserActive();
+        $hak_akses_selected = $request->akses ?? $user->hak_akses;
+        $semester_selected = $request->semester ?? 20231;
+        $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
+        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
+
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+        }
+
+        return view('pages/akm', [
+            'User' => $user,
+            'pages_active' => 'akm',
+            'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $hak_akses_selected,
+            'SelectedSemester' => $semester_selected,
+            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
+        ]);
+    }
+
+    public function Visualisasi_KRS(Request $request)
+    {
+        $user = $this->getUserActive();
+        $hak_akses_selected = $request->akses ?? $user->hak_akses;
+        $semester_selected = $request->semester ?? 20231;
+        $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
+        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
+
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+        }
+
+        return view('pages/krs', [
+            'User' => $user,
+            'pages_active' => 'krs',
+            'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $hak_akses_selected,
+            'SelectedSemester' => $semester_selected,
+            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
+        ]);
+    }
+
+    public function Visualisasi_AktivitasMahasiswa(Request $request)
+    {
+        $user = $this->getUserActive();
+        $hak_akses_selected = $request->akses ?? $user->hak_akses;
+        $semester_selected = $request->semester ?? 20231;
+        $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
+        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
+        $ListJenisAktivitasMahasiswa = DB::select('SELECT * FROM tbgetjenisaktivitasmahasiswa ORDER BY id_jenis_aktivitas_mahasiswa ASC');
+
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+        }
+
+        $queryTotalAktivitasMahasiswa = [];
+        $queryListAktivitasMahasiswa = [];
+
+        $whereProdiSelected = "";
+
+        if ($request->akses != "" && $request->akses != "All Data") {
+            $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
+        }
+
+        foreach ($ListJenisAktivitasMahasiswa as $jenis) {
+            $queryTotalAktivitasMahasiswa[$jenis->id_jenis_aktivitas_mahasiswa] = "SELECT  nama_jenis_aktivitas AS Jenis, 
+            COUNT(id) AS Total 
+        FROM tbgetlistaktivitasmahasiswa 
+        WHERE id_jenis_aktivitas = '{$jenis->id_jenis_aktivitas_mahasiswa}' {$whereProdiSelected} AND id_semester = {$semester_selected}
+        GROUP BY nama_jenis_aktivitas";
+
+            $queryListAktivitasMahasiswa[$jenis->id_jenis_aktivitas_mahasiswa] = DB::select(
+                "SELECT judul AS Judul, 
+                nama_jenis_anggota AS JenisAnggota, 
+                keterangan AS Keterangan, 
+                nama_prodi AS NamaProdi, 
+                lokasi AS Lokasi, 
+                nama_jenis_aktivitas AS JenisAktivitas, 
+                sk_tugas AS SKTugas, 
+                untuk_kampus_merdeka AS isKampusMerdeka
+            FROM tbgetlistaktivitasmahasiswa
+            WHERE id_semester = ? {$whereProdiSelected} AND id_jenis_aktivitas = ? ORDER BY judul ASC",
+                [$semester_selected, $jenis->id_jenis_aktivitas_mahasiswa]
+            );
+        }
+
+        $ListAktivitasMahasiswa = [];
+
+        foreach ($ListJenisAktivitasMahasiswa as $jenis) {
+            $resultTotal = DB::select($queryTotalAktivitasMahasiswa[$jenis->id_jenis_aktivitas_mahasiswa]);
+            $resultAktivitas = $queryListAktivitasMahasiswa[$jenis->id_jenis_aktivitas_mahasiswa];
+
+            $ListAktivitasMahasiswa[] = (object) [
+                'Jenis' => $jenis->nama_jenis_aktivitas_mahasiswa,
+                'Total' => empty($resultTotal) ? 0 : $resultTotal[0]->Total,
+                'ListAktivitas' => $resultAktivitas
+            ];
+        }
+
+        //var_dump($ListAktivitasMahasiswa) . die();
+
+        return view('pages/aktivitas-mahasiswa', [
+            'User' => $user,
+            'pages_active' => 'aktivitas-mahasiswa',
+            'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $hak_akses_selected,
+            'SelectedSemester' => $semester_selected,
+            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
+            'ListJenisAktivitasMahasiswa' => $ListJenisAktivitasMahasiswa,
+            'ListAktivitasMahasiswa' => $ListAktivitasMahasiswa,
+        ]);
+    }
+
+
+    public function Visualisasi_BebanDosen(Request $request)
+    {
+        $user = $this->getUserActive();
+        $hak_akses_selected = $request->akses ?? $user->hak_akses;
+        $semester_selected = $request->semester ?? 20231;
+        $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
+        $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
+
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+        }
+
+        return view('pages/beban-dosen', [
+            'User' => $user,
+            'pages_active' => 'beban-dosen',
+            'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $hak_akses_selected,
+            'SelectedSemester' => $semester_selected,
+            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'ListProdi' => $ListProdi,
+            'ListFakultas' => $ListFakultas,
+        ]);
+    }
 }

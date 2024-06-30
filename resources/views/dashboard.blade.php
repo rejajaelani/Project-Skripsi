@@ -37,7 +37,7 @@
         @else
             <h3>User not logged in</h3>
         @endif
-        <div class="wrapper-btn-header-right d-none">
+        <div class="wrapper-btn-header-right ">
             <a href="{{ route('process.synchronizeTEST') }}" class="btn btn-outline-light"><i
                     class="bi bi-bezier2"></i>&nbsp;SYNC
                 MANUAL MAINTENANCE 1 TABLE</a>

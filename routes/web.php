@@ -13,6 +13,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/kelas-perkuliahan', [DataVisualisasiController::class, 'Visualisasi_KelasPerkuliahan'])->name('kelas-perkuliahan');
 
+    Route::get('/kelulusan-do', [DataVisualisasiController::class, 'Visualisasi_KelulusanDO'])->name('kelulusan-do');
+
+    Route::get('/krs', [DataVisualisasiController::class, 'Visualisasi_KRS'])->name('krs');
+
+    Route::get('/akm', [DataVisualisasiController::class, 'Visualisasi_AKM'])->name('akm');
+
+    Route::get('/aktivitas-mahasiswa', [DataVisualisasiController::class, 'Visualisasi_AktivitasMahasiswa'])->name('aktivitas-mahasiswa');
+
+    Route::get('/beban-dosen', [DataVisualisasiController::class, 'Visualisasi_BebanDosen'])->name('beban-dosen');
+
     Route::get('/data-sync', [DataVisualisasiController::class, 'Visualisasi_DataSync'])->name('data-sync');
 
     Route::get('/user', [DataVisualisasiController::class, 'Visualisasi_User'])->name('user');

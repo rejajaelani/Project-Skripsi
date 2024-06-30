@@ -214,7 +214,8 @@
                     "GetListDosen", "GetRekapJumlahDosen", "GetListPenugasanDosen",
                     "GetRekapJumlahMahasiswa", "GetDataTerhapus", "GetListMataKuliah",
                     "GetDetailMataKuliah", "GetBiodataMahasiswa",
-                    "GetPerhitunganSKS", "GetListPrestasiMahasiswa", "GetDosenPembimbing"
+                    "GetPerhitunganSKS", "GetListPrestasiMahasiswa", "GetDosenPembimbing",
+                    "GetJenisAktivitasMahasiswa", "GetJenisKeluar"
                 ];
 
                 var count = 0;
@@ -303,7 +304,8 @@
                     "GetDetailPerkuliahanMahasiswa",
 
                     //id_semester
-                    "GetAktivitasKuliahMahasiswa", "GetListKurikulum", "GetDosenPengajarKelasKuliah",
+                    "GetListAktivitasMahasiswa", "GetAktivitasKuliahMahasiswa", "GetListKurikulum",
+                    "GetDosenPengajarKelasKuliah",
 
                     //id_periode_keluar
                     "GetListMahasiswaLulusDO", "GetDetailMahasiswaLulusDO"

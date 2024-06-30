@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('title-page')
-    <title>Empty Pages - Visualisasi Data Mahasiswa</title>
+    <title>Krs - Visualisasi Data Mahasiswa</title>
 @endsection
 
 @section('container-content')

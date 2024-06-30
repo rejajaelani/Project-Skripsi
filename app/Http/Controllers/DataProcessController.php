@@ -383,7 +383,7 @@ class DataProcessController extends Controller
                 $feeder_token = $tokenResponse->data->token;
 
                 // Membuat data untuk request
-                $sync['act'] = 'GetListDosen';
+                $sync['act'] = 'GetJenisAktivitasMahasiswa';
                 $sync['token'] = $feeder_token;
                 $sync['filter'] = "";
                 $sync['order'] = "";
@@ -402,7 +402,7 @@ class DataProcessController extends Controller
                     if (empty($array['data'])) {
                         // Jika tidak ada data, hentikan perulangan dan kembalikan respons
                         $response = [
-                            "name_table" => 'GetListMahasiswa',
+                            "name_table" => $tableName,
                             "status" => "success"
                         ];
                         return response()->json(['data' => $response], 200);
@@ -420,7 +420,7 @@ class DataProcessController extends Controller
                 } while (!empty($array['data']));
             } else {
                 $response = [
-                    "name_table" => 'GetListMahasiswa',
+                    "name_table" => "error",
                     "status" => "The token is failed"
                 ];
                 return response()->json(['data' => $response], 400);
@@ -430,7 +430,7 @@ class DataProcessController extends Controller
             \Log::error('Error in synchronizeData: ' . $e->getMessage());
             // Berikan respons kesalahan yang umum
             $response = [
-                "name_table" => 'GetListMahasiswa',
+                "name_table" => "error",
                 "status" => "Internal Server Error"
             ];
             return response()->json(['data' => $response], 500);

@@ -60,35 +60,35 @@
                         </li>
 
                         <li class="sidebar-item {{ $pages_active == 'krs' ? 'active' : '' }}">
-                            <a href="" class='sidebar-link'>
+                            <a href="{{ route('krs') }}" class='sidebar-link'>
                                 <i class="bi bi-credit-card-2-front-fill"></i>
                                 <span>KRS</span>
                             </a>
                         </li>
 
                         <li class="sidebar-item {{ $pages_active == 'akm' ? 'active' : '' }}">
-                            <a href="" class='sidebar-link'>
+                            <a href="{{ route('akm') }}" class='sidebar-link'>
                                 <i class="bi bi-grid-fill"></i>
                                 <span>AKM</span>
                             </a>
                         </li>
 
                         <li class="sidebar-item {{ $pages_active == 'aktivitas-mahasiswa' ? 'active' : '' }}">
-                            <a href="" class='sidebar-link'>
+                            <a href="{{ route('aktivitas-mahasiswa') }}" class='sidebar-link'>
                                 <i class="bi bi-card-heading"></i>
                                 <span>Aktivitas Mahasiswa</span>
                             </a>
                         </li>
 
                         <li class="sidebar-item {{ $pages_active == 'kelulusan-do' ? 'active' : '' }}">
-                            <a href="" class='sidebar-link'>
+                            <a href="{{ route('kelulusan-do') }}" class='sidebar-link'>
                                 <i class="bi bi-calendar-check-fill"></i>
                                 <span>Kelulusan / DO</span>
                             </a>
                         </li>
 
                         <li class="sidebar-item {{ $pages_active == 'beban-dosen' ? 'active' : '' }}">
-                            <a href="" class='sidebar-link'>
+                            <a href="{{ route('beban-dosen') }}" class='sidebar-link'>
                                 <i class="bi bi-ethernet"></i>
                                 <span>Beban Dosen</span>
                             </a>
