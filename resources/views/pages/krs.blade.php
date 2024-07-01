@@ -22,7 +22,7 @@
                 $HakAkses == 'Rektor' ||
                 $HakAkses == 'Teknologi dan Informatika' ||
                 $HakAkses == 'Bisnis dan Desain Kreatif')
-            <form action="{{ route('kelas-perkuliahan') }}" method="GET" class="mb-3" id="form-select-filter">
+            <form action="{{ route('krs') }}" method="GET" class="mb-3" id="form-select-filter">
                 <div class="row">
                     <div class="col-3">
                         <select name="akses" id="akses" class="form-select form-select-sm">
@@ -87,7 +87,7 @@
                     <div class="col">
                         <button type="submit" class="btn btn-sm btn-outline-primary"><i
                                 class="bi bi-send-fill"></i>&nbsp;FILTER</button>
-                        <a href="{{ route('kelas-perkuliahan') }}" class="btn btn-sm btn-outline-secondary"><i
+                        <a href="{{ route('krs') }}" class="btn btn-sm btn-outline-secondary"><i
                                 class="bi bi-arrow-counterclockwise"></i></a>
                     </div>
                 </div>
@@ -102,5 +102,156 @@
                 </div>
             </div>
         @endif
+        <div class="row">
+        @foreach ($TotalMahasiswaAktif as $mhsAktif)
+        <div class="col-3 col-lg-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body px-4 py-4-5">
+                    <div class="d-flex" style="align-items: center;gap: 10px;">
+                        <div class="stats-icon green" style="width: 50px;">
+                            <i class="iconly-boldShow"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Total Mahasiswa Aktif
+                            </h6>
+                            <h6 class="font-extrabold mb-0">{{ $mhsAktif->Total }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;" data-bs-toggle="modal" data-bs-target="#ModalTotalMahasiswaAktif"><i class="bi bi-box-arrow-down-right"></i></button>
+            </div>
+        </div>
+        @endforeach
+        @foreach ($TotalMahasiswaKRS as $mhsKRS)
+        <div class="col-3 col-lg-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body px-4 py-4-5">
+                    <div class="d-flex" style="align-items: center;gap: 10px;">
+                        <div class="stats-icon green" style="width: 50px;">
+                            <i class="iconly-boldShow"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Total Mahasiswa KRS
+                            </h6>
+                            <h6 class="font-extrabold mb-0">{{ $mhsKRS->Total }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;" data-bs-toggle="modal" data-bs-target="#ModalTotalMahasiswaKRS"><i class="bi bi-box-arrow-down-right"></i></button>
+            </div>
+        </div>
+        @endforeach
+        @foreach ($TotalMahasiswaBelumKRS as $mhsBelumKRS)
+        <div class="col-3 col-lg-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body px-4 py-4-5">
+                    <div class="d-flex" style="align-items: center;gap: 10px;">
+                        <div class="stats-icon green" style="width: 50px;">
+                            <i class="iconly-boldShow"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Total Mahasiswa Belum KRS
+                            </h6>
+                            <h6 class="font-extrabold mb-0">{{ $mhsBelumKRS->Total }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;" data-bs-toggle="modal" data-bs-target="#ModalTotalMahasiswaBelumKRS"><i class="bi bi-box-arrow-down-right"></i></button>
+            </div>
+        </div>
+        @endforeach
+        @foreach ($TotalMahsiswaSKS as $mhsSKS)
+        <div class="col-3 col-lg-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body px-4 py-4-5">
+                    <div class="d-flex" style="align-items: center;gap: 10px;">
+                        <div class="stats-icon green" style="width: 50px;">
+                            <i class="iconly-boldShow"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Total Mahasiswa SKS
+                            </h6>
+                            <h6 class="font-extrabold mb-0">{{ $mhsSKS->Total }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;" data-bs-toggle="modal" data-bs-target="#ModalTotalMahsiswaSKS"><i class="bi bi-box-arrow-down-right"></i></button>
+            </div>
+        </div>
+        @endforeach
+        @foreach ($TotalMahsiswaSKSMIN as $mhsSKSMIN)
+        <div class="col-3 col-lg-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body px-4 py-4-5">
+                    <div class="d-flex" style="align-items: center;gap: 10px;">
+                        <div class="stats-icon green" style="width: 50px;">
+                            <i class="iconly-boldShow"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Total Mahasiswa SKS (MIN)
+                            </h6>
+                            <h6 class="font-extrabold mb-0">{{ $mhsSKSMIN->Total }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;" data-bs-toggle="modal" data-bs-target="#ModalTotalMahsiswaSKSMIN"><i class="bi bi-box-arrow-down-right"></i></button>
+            </div>
+        </div>
+        @endforeach
+        @foreach ($TotalMahsiswaSKSMAX as $mhsSKSMAX)
+        <div class="col-3 col-lg-4 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body px-4 py-4-5">
+                    <div class="d-flex" style="align-items: center;gap: 10px;">
+                        <div class="stats-icon green" style="width: 50px;">
+                            <i class="iconly-boldShow"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted font-semibold">Total Mahasiswa SKS (MAX)
+                            </h6>
+                            <h6 class="font-extrabold mb-0">{{ $mhsSKSMAX->Total }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" style="position: absolute;bottom: 5px;right: 5px;border: 0px;background: transparent;" data-bs-toggle="modal" data-bs-target="#ModalTotalMahsiswaSKSMAX"><i class="bi bi-box-arrow-down-right"></i></button>
+            </div>
+        </div>
+        @endforeach
+        </div>
+        <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5>List Kelas Kuliah</h5>
+                    <table class="table table-bordered table-striped" id="tableListKelasPerkuliahan">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Mata Kuliah</th>
+                                <th>Kode Mata Kuliah</th>
+                                <th>Kelas</th>
+                                <th>Jumlah SKS</th>
+                                <th>Nama Dosen Pengajar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php $no = 1; ?>
+                            @foreach ($ListKelasPerkuliahan as $kelas)
+                            <tr>
+                                <td>{{ $no }}</td>
+                                <td>{{ $kelas->NamaMatkul }}</td>
+                                <td>{{ $kelas->KodeMatkul }}</td>
+                                <td>{{ $kelas->Kelas }}</td>
+                                <td>{{ $kelas->JumlahSKS }}</td>
+                                <td>{{ $kelas->NamaDosen }}</td>
+                            </tr>
+                            <?php $no++; ?>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 @endsection
