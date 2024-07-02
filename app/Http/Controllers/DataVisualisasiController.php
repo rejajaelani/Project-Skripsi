@@ -363,41 +363,88 @@ class DataVisualisasiController extends Controller
         $ListProdi = DB::select('SELECT * FROM tbgetprodi ORDER BY nama_program_studi ASC');
         $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
         $ListStatusMhs = DB::select('SELECT * FROM tbgetstatusmahasiswa');
-    
+
         if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
             $hak_akses_selected = 'All Data';
         }
-    
+
         $queryTotalMahasiswa = [];
         $queryListMahasiswa = [];
-    
+
         $whereProdiSelected = "";
-    
+        $whereProdiSelectedAKM = "";
+
+
         if ($request->akses != "" && $request->akses != "All Data") {
-            $whereProdiSelected = "AND id_prodi = ?";
+            $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
+            $whereProdiSelectedAKM = "AND akm.id_prodi = '{$request->akses}'";
         }
 
-        $ListMahasiswa
-    
+        $TotalMahasiswaAKM = DB::select(
+            "SELECT 
+                COUNT(lm.id) AS Total
+            FROM 
+                tbgetlistmahasiswa lm 
+            JOIN 
+                tbgetaktivitaskuliahmahasiswa akm
+            ON
+                lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
+            WHERE 
+                lm.id_periode = ?
+            {$whereProdiSelectedAKM}",
+            [$semester_selected]
+        );
+
+        $ListMahasiswaALLStatus = DB::select(
+            "SELECT 
+                lm.nama_mahasiswa AS NamaMahasiswa, 
+                lm.nim AS NIM, 
+                lm.jenis_kelamin AS JenisKelamin, 
+                lm.nama_agama AS NamaAgama, 
+                lm.nama_program_studi AS NamaProdi, 
+                akm.nama_semester AS Semester, 
+                akm.angkatan AS Angkatan, 
+                akm.nama_status_mahasiswa AS StatusMahasiswa, 
+                akm.ips AS IPS,
+                akm.ipk AS IPK,
+                akm.sks_semester AS SKSPerSemester,
+                akm.sks_total AS SKSKeseluruhan, 
+                akm.biaya_kuliah_smt AS BiayaKuliahPerSemester
+            FROM 
+                tbgetlistmahasiswa lm 
+            JOIN 
+                tbgetaktivitaskuliahmahasiswa akm
+            ON
+                lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
+            WHERE 
+                lm.id_periode = ?
+            {$whereProdiSelectedAKM}",
+            [$semester_selected]
+        );
+
         foreach ($ListStatusMhs as $status) {
             $queryTotalMahasiswa[$status->nama_status_mahasiswa] = "
                 SELECT 
-                    COUNT(id) AS Total 
+                    COUNT(lm.id) AS Total 
                 FROM 
-                    tbgetlistmahasiswa 
+                    tbgetlistmahasiswa lm
+                JOIN
+                    tbgetaktivitaskuliahmahasiswa akm
+                ON
+                    lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
                 WHERE 
-                    id_periode = ?
+                    akm.id_semester = ?
                 AND
-                    nama_status_mahasiswa = ?
-                    {$whereProdiSelected}";
-    
+                    akm.nama_status_mahasiswa = ?
+                    {$whereProdiSelectedAKM}";
+
             $params = [$semester_selected, $status->nama_status_mahasiswa];
-            if ($whereProdiSelected != "") {
+            if ($whereProdiSelectedAKM != "") {
                 $params[] = $request->akses;
             }
-    
-            $queryListMahasiswa[$status->nama_status_mahasiswa] = DB::select("
-                SELECT 
+
+            $queryListMahasiswa[$status->nama_status_mahasiswa] = DB::select(
+                "SELECT 
                     lm.nama_mahasiswa AS NamaMahasiswa, 
                     lm.nim AS NIM, 
                     lm.jenis_kelamin AS JenisKelamin, 
@@ -418,32 +465,34 @@ class DataVisualisasiController extends Controller
                 ON
                     lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
                 WHERE 
-                    lm.nama_status_mahasiswa = ?
+                    akm.nama_status_mahasiswa = ?
                 AND
                     lm.id_periode = ?
-                {$whereProdiSelected}", 
-                [$status->nama_status_mahasiswa, $semester_selected]);
+                {$whereProdiSelectedAKM}",
+                [$status->nama_status_mahasiswa, $semester_selected]
+            );
         }
-    
+
         $ListMahasiswaAKM = [];
-    
+
         foreach ($ListStatusMhs as $status) {
             $params = [$semester_selected, $status->nama_status_mahasiswa];
-            if ($whereProdiSelected != "") {
+            if ($whereProdiSelectedAKM != "") {
                 $params[] = $request->akses;
             }
-            $resultTotal = DB::select($queryTotalMahasiswa[$status->nama_status_mahasiswa], $params);
+            $resultTotal = DB::select($queryTotalMahasiswa[$status->nama_status_mahasiswa], [$semester_selected, $status->nama_status_mahasiswa]);
             $resultMahasiswa = $queryListMahasiswa[$status->nama_status_mahasiswa];
-    
+
             $ListMahasiswaAKM[] = (object) [
                 'Status' => $status->nama_status_mahasiswa,
                 'Total' => empty($resultTotal) ? 0 : $resultTotal[0]->Total,
                 'ListMahasiswa' => !empty($resultMahasiswa) ? $resultMahasiswa : []
             ];
         }
-    
+
         //var_dump($ListMahasiswaAKM) . die();
-    
+        //var_dump($ListMahasiswaALLStatus) . die();
+
         return view('pages/akm', [
             'User' => $user,
             'pages_active' => 'akm',
@@ -454,9 +503,10 @@ class DataVisualisasiController extends Controller
             'ListProdi' => $ListProdi,
             'ListFakultas' => $ListFakultas,
             'ListMahasiswaAKM' => $ListMahasiswaAKM,
+            'ListMahasiswaALLStatus' => $ListMahasiswaALLStatus,
+            'TotalMahasiswaAKM' => $TotalMahasiswaAKM,
         ]);
     }
-    
 
     public function Visualisasi_KRS(Request $request)
     {
@@ -470,18 +520,30 @@ class DataVisualisasiController extends Controller
             $hak_akses_selected = 'All Data';
         }
 
-        $whereProdiSelected = "";
+        $whereProdiSelectedAKM = "";
         $whereProdiSelectedLM = "";
         $whereProdiSelectedKR = "";
 
 
         if ($request->akses != "" && $request->akses != "All Data") {
-            $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
+            $whereProdiSelectedAKM = "AND akm.id_prodi = '{$request->akses}'";
             $whereProdiSelectedLM = "AND lm.id_prodi = '{$request->akses}'";
             $whereProdiSelectedKR = "AND kr.id_prodi = '{$request->akses}'";
         }
 
-        $TotalMahasiswaAktif = DB::select("SELECT COUNT(id) AS Total FROM tbgetlistmahasiswa WHERE nama_status_mahasiswa = 'AKTIF' {$whereProdiSelected} AND id_periode = ?", [$semester_selected]);
+        $TotalMahasiswaAktif = DB::select("SELECT 
+                COUNT(lm.id) AS Total
+            FROM 
+                tbgetlistmahasiswa lm 
+            JOIN 
+                tbgetaktivitaskuliahmahasiswa akm
+            ON
+                lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
+            WHERE 
+                akm.id_semester = ?
+            AND
+                akm.nama_status_mahasiswa = 'AKTIF'
+            {$whereProdiSelectedAKM}", [$semester_selected]);
 
         $TotalMahasiswaKRS = DB::select("SELECT 
             COUNT(*) AS Total
@@ -494,10 +556,14 @@ class DataVisualisasiController extends Controller
             tbgetlistmahasiswa lm 
             ON 
                 kr.id_registrasi_mahasiswa = lm.id_registrasi_mahasiswa
+            JOIN
+                tbgetaktivitaskuliahmahasiswa akm 
+            ON 
+                kr.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
             AND
-            lm.nama_status_mahasiswa = 'AKTIF'
+            akm.nama_status_mahasiswa = 'AKTIF'
             WHERE 
-            kr.id_periode = ? {$whereProdiSelectedKR}
+            akm.id_semester = ? {$whereProdiSelectedAKM}
             GROUP BY 
             kr.id_registrasi_mahasiswa
         ) AS subquery;", [$semester_selected]);
@@ -506,9 +572,13 @@ class DataVisualisasiController extends Controller
             COUNT(*) AS Total
         FROM 
             tbgetlistmahasiswa lm
+        JOIN
+            tbgetaktivitaskuliahmahasiswa akm 
+        ON 
+            lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
         WHERE 
-            lm.nama_status_mahasiswa = 'AKTIF'
-            AND lm.id_registrasi_mahasiswa NOT IN (
+            akm.nama_status_mahasiswa = 'AKTIF'
+            AND akm.id_registrasi_mahasiswa NOT IN (
                 SELECT 
                     kr.id_registrasi_mahasiswa
                 FROM 
@@ -516,7 +586,7 @@ class DataVisualisasiController extends Controller
                 WHERE 
                     kr.id_periode = ?
             ) 
-            AND lm.id_periode = ? {$whereProdiSelectedLM};
+            AND akm.id_semester = ? {$whereProdiSelectedAKM};
         ", [$semester_selected, $semester_selected]);
 
         $TotalMahsiswaSKS = DB::select("SELECT 
@@ -530,12 +600,16 @@ class DataVisualisasiController extends Controller
             tbgetlistmahasiswa lm 
             ON 
                 kr.id_registrasi_mahasiswa = lm.id_registrasi_mahasiswa
+            JOIN
+                tbgetaktivitaskuliahmahasiswa akm 
+            ON 
+                kr.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
             AND
-            lm.nama_status_mahasiswa = 'AKTIF'
+                akm.nama_status_mahasiswa = 'AKTIF'
             WHERE 
-            kr.id_periode = ? {$whereProdiSelectedKR}
+                akm.id_semester = ? {$whereProdiSelectedAKM}
             GROUP BY 
-            kr.id_registrasi_mahasiswa
+                kr.id_registrasi_mahasiswa
         ) AS subquery;", [$semester_selected]);
 
         $TotalMahsiswaSKSMIN = DB::select("SELECT 
@@ -549,10 +623,14 @@ class DataVisualisasiController extends Controller
             tbgetlistmahasiswa lm 
             ON 
                 kr.id_registrasi_mahasiswa = lm.id_registrasi_mahasiswa
+            JOIN
+                tbgetaktivitaskuliahmahasiswa akm 
+            ON 
+                kr.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
             AND
-            lm.nama_status_mahasiswa = 'AKTIF'
+                akm.nama_status_mahasiswa = 'AKTIF'
             WHERE 
-            kr.id_periode = ? {$whereProdiSelectedKR}
+                akm.id_semester = ? {$whereProdiSelectedAKM}
             GROUP BY 
             kr.id_registrasi_mahasiswa
         ) AS subquery;", [$semester_selected]);
@@ -568,10 +646,14 @@ class DataVisualisasiController extends Controller
             tbgetlistmahasiswa lm 
             ON 
                 kr.id_registrasi_mahasiswa = lm.id_registrasi_mahasiswa
+            JOIN
+                tbgetaktivitaskuliahmahasiswa akm 
+            ON 
+                kr.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
             AND
-            lm.nama_status_mahasiswa = 'AKTIF'
+                akm.nama_status_mahasiswa = 'AKTIF'
             WHERE 
-            kr.id_periode = ? {$whereProdiSelectedKR}
+                akm.id_semester = ? {$whereProdiSelectedAKM}
             GROUP BY 
             kr.id_registrasi_mahasiswa
         ) AS subquery;", [$semester_selected]);
@@ -584,10 +666,14 @@ class DataVisualisasiController extends Controller
             lm.nama_program_studi AS NamaProdi 
         FROM 
             tbgetlistmahasiswa lm
+        JOIN
+            tbgetaktivitaskuliahmahasiswa akm
+        ON
+            lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
         WHERE
-            lm.nama_status_mahasiswa = 'AKTIF'
+            akm.nama_status_mahasiswa = 'AKTIF'
         AND
-            lm.id_periode = ? 
+            akm.id_semester = ? 
         {$whereProdiSelectedLM}", [$semester_selected]);
 
         $ListMahasiswaAktifSudahKRS = DB::select("SELECT  
@@ -599,6 +685,10 @@ class DataVisualisasiController extends Controller
             COALESCE(SUM(kr.sks_mata_kuliah), 0) AS TotalSKS
         FROM 
             tbgetlistmahasiswa lm
+        JOIN
+            tbgetaktivitaskuliahmahasiswa akm 
+        ON 
+            lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
         LEFT JOIN 
             tbgetkrsmahasiswa kr 
         ON 
@@ -606,10 +696,10 @@ class DataVisualisasiController extends Controller
         AND 
             kr.id_periode = ?
         WHERE
-            lm.nama_status_mahasiswa = 'AKTIF'
+            akm.nama_status_mahasiswa = 'AKTIF'
         AND
-            lm.id_periode = ?
-        {$whereProdiSelectedKR}
+            akm.id_semester = ?
+        {$whereProdiSelectedAKM}
         AND 
             lm.id_registrasi_mahasiswa IN (
                 SELECT 
@@ -636,11 +726,15 @@ class DataVisualisasiController extends Controller
             lm.nama_program_studi AS NamaProdi 
         FROM 
             tbgetlistmahasiswa lm
+        JOIN
+            tbgetaktivitaskuliahmahasiswa akm 
+        ON 
+            lm.id_registrasi_mahasiswa = akm.id_registrasi_mahasiswa
         WHERE
-            lm.nama_status_mahasiswa = 'AKTIF'
+            akm.nama_status_mahasiswa = 'AKTIF'
         AND
-            lm.id_periode = ? 
-        {$whereProdiSelectedLM}
+            akm.id_semester = ? 
+        {$whereProdiSelectedAKM}
         AND 
             lm.id_registrasi_mahasiswa NOT IN (
                 SELECT 
