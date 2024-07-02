@@ -215,7 +215,7 @@
                     "GetRekapJumlahMahasiswa", "GetDataTerhapus", "GetListMataKuliah",
                     "GetDetailMataKuliah", "GetBiodataMahasiswa",
                     "GetPerhitunganSKS", "GetListPrestasiMahasiswa", "GetDosenPembimbing",
-                    "GetJenisAktivitasMahasiswa", "GetJenisKeluar"
+                    "GetJenisAktivitasMahasiswa", "GetJenisKeluar", "GetStatusMahasiswa"
                 ];
 
                 var count = 0;
