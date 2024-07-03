@@ -383,7 +383,7 @@ class DataProcessController extends Controller
                 $feeder_token = $tokenResponse->data->token;
 
                 // Membuat data untuk request
-                $sync['act'] = 'GetStatusMahasiswa';
+                $sync['act'] = 'GetListDosen';
                 $sync['token'] = $feeder_token;
                 $sync['filter'] = "";
                 $sync['order'] = "";

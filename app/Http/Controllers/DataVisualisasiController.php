@@ -852,6 +852,109 @@ class DataVisualisasiController extends Controller
             $hak_akses_selected = 'All Data';
         }
 
+        $whereProdiSelected = "";
+        $whereProdiSelectedDPK = "";
+        $whereProdiSelectedDPK2 = "";
+
+        if ($request->akses != "" && $request->akses != "All Data") {
+            $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
+            $whereProdiSelectedDPK = "AND dpk.id_prodi = '{$request->akses}'";
+            $whereProdiSelectedDPK2 = "AND dpk2.id_prodi = '{$request->akses}'";
+        }
+
+        $TotalDosenMengajar = DB::select("SELECT COUNT(ld.id) AS Total FROM tbgetlistdosen ld WHERE ld.id_dosen IN (SELECT dpk.id_dosen FROM tbgetdosenpengajarkelaskuliah dpk WHERE id_semester = ? {$whereProdiSelected} GROUP BY dpk.id_dosen)", [$semester_selected]);
+
+        $TotalDosenTidakMengajar = DB::select("SELECT COUNT(ld.id) AS Total FROM tbgetlistdosen ld WHERE ld.id_dosen NOT IN (SELECT dpk.id_dosen FROM tbgetdosenpengajarkelaskuliah dpk WHERE id_semester = ? {$whereProdiSelected} GROUP BY dpk.id_dosen)", [$semester_selected]);
+
+        $TotalDosenMengajar = $TotalDosenMengajar[0]->Total ?? 0;
+        $TotalDosenTidakMengajar = $TotalDosenTidakMengajar[0]->Total ?? 0;
+
+        $TotalDosen = $TotalDosenMengajar + $TotalDosenTidakMengajar;
+
+        $ListDosen = DB::select("SELECT 
+            ld.id,  
+            ld.nama_dosen,
+            ld.nidn,
+            ld.jenis_kelamin,
+            ld.nama_agama,
+            ld.nama_status_aktif,
+            COALESCE(SUM(CAST(dpk.sks_substansi_total AS FLOAT)), 0) AS TotalSKS
+        FROM 
+            tbgetlistdosen ld 
+        LEFT OUTER JOIN 
+            tbgetdosenpengajarkelaskuliah dpk 
+        ON 
+            ld.id_dosen = dpk.id_dosen
+        AND 
+            dpk.id_semester = ? {$whereProdiSelectedDPK} 
+        GROUP BY 
+            ld.id, 
+            ld.nama_dosen,
+            ld.nidn,
+            ld.jenis_kelamin,
+            ld.nama_agama,
+            ld.nama_status_aktif
+        ORDER BY
+            ld.id 
+        ASC;", [$semester_selected]);
+
+        $ListDosenMengajar = DB::select("SELECT 
+            ld.id,  
+            ld.nama_dosen,
+            ld.nidn,
+            ld.jenis_kelamin,
+            ld.nama_agama,
+            ld.nama_status_aktif,
+            COALESCE(SUM(CAST(dpk.sks_substansi_total AS FLOAT)), 0) AS TotalSKS
+        FROM 
+            tbgetlistdosen ld 
+        LEFT OUTER JOIN 
+            tbgetdosenpengajarkelaskuliah dpk 
+        ON 
+            ld.id_dosen = dpk.id_dosen
+        AND 
+            dpk.id_semester = ? {$whereProdiSelectedDPK} 
+        WHERE
+            ld.id_dosen IN (SELECT dpk2.id_dosen FROM tbgetdosenpengajarkelaskuliah dpk2 WHERE dpk2.id_semester = ? {$whereProdiSelectedDPK2} GROUP BY dpk2.id_dosen) 
+        GROUP BY 
+            ld.id, 
+            ld.nama_dosen,
+            ld.nidn,
+            ld.jenis_kelamin,
+            ld.nama_agama,
+            ld.nama_status_aktif
+        ORDER BY
+            ld.id 
+        ASC;", [$semester_selected, $semester_selected]);
+
+        $ListDosenTidakMengajar = DB::select("SELECT 
+            ld.id,  
+            ld.nama_dosen,
+            ld.nidn,
+            ld.jenis_kelamin,
+            ld.nama_agama,
+            ld.nama_status_aktif
+        FROM 
+            tbgetlistdosen ld 
+        LEFT OUTER JOIN 
+            tbgetdosenpengajarkelaskuliah dpk 
+        ON 
+            ld.id_dosen = dpk.id_dosen
+        AND 
+            dpk.id_semester = ? {$whereProdiSelectedDPK} 
+        WHERE
+            ld.id_dosen NOT IN (SELECT dpk2.id_dosen FROM tbgetdosenpengajarkelaskuliah dpk2 WHERE dpk2.id_semester = ? {$whereProdiSelectedDPK2} GROUP BY dpk2.id_dosen) 
+        GROUP BY 
+            ld.id, 
+            ld.nama_dosen,
+            ld.nidn,
+            ld.jenis_kelamin,
+            ld.nama_agama,
+            ld.nama_status_aktif
+        ORDER BY
+            ld.id 
+        ASC;", [$semester_selected, $semester_selected]);
+
         return view('pages/beban-dosen', [
             'User' => $user,
             'pages_active' => 'beban-dosen',
@@ -861,6 +964,12 @@ class DataVisualisasiController extends Controller
             'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
             'ListProdi' => $ListProdi,
             'ListFakultas' => $ListFakultas,
+            'TotalDosenMengajar' => $TotalDosenMengajar,
+            'TotalDosenTidakMengajar' => $TotalDosenTidakMengajar,
+            'TotalDosen' => $TotalDosen,
+            'ListDosen' => $ListDosen,
+            'ListDosenMengajar' => $ListDosenMengajar,
+            'ListDosenTidakMengajar' => $ListDosenTidakMengajar,
         ]);
     }
 }
