@@ -30,11 +30,6 @@
                     <option value="" style="display: none;"></option>
                     <option value="All Data" {{ $SelectedAkses == 'All Data' ? 'selected' : '' }}>All Data
                     </option>
-                    <!-- @foreach ($ListFakultas as $fakultas)
-    <option value="{{ $fakultas->nama_fakultas }}" {{ $SelectedAkses == $fakultas->nama_fakultas ? 'selected' : '' }}>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $fakultas->nama_fakultas }}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </option>
-    @endforeach -->
                     @foreach ($ListProdi as $prodi)
                     <option value="{{ $prodi->id_prodi }}" {{ $SelectedAkses == $prodi->id_prodi ? 'selected' : '' }}>
                         {{ $prodi->nama_program_studi }}
@@ -81,16 +76,36 @@
         </div>
     </form>
     @else
-    <div class="row mb-3">
-        <div class="col-3">
-            <select name="" id="" class="form-select form-select-sm" disabled>
-                <option value="{{ $SelectedAkses }}" style="display: none" selected>{{ $SelectedAkses }}
-                </option>
-            </select>
+    <form action="{{ route('kelas-perkuliahan') }}" method="GET" class="mb-3" id="form-select-filter">
+        <div class="row">
+            <div class="col-3">
+                <select name="akses" id="akses" class="form-select form-select-sm">
+                    @foreach ($ListProdi as $prodi)
+                    <option value="{{ $prodi->id_prodi }}" {{ $SelectedAkses == $prodi->id_prodi ? 'selected' : '' }}>
+                        {{ $prodi->nama_program_studi }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-2">
+                <select name="semester" id="semester" class="form-select form-select-sm">
+                    @for ($year = 2023; $year >= 2015; $year--)
+                    <option value="{{ $year }}2" {{ $SelectedSemester == $year . '2' ? 'selected' : '' }}>{{ $year }} (Genap)
+                    </option>
+                    <option value="{{ $year }}1" {{ $SelectedSemester == $year . '1' ? 'selected' : '' }}>{{ $year }} (Ganjil)
+                    </option>
+                    @endfor
+                </select>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-send-fill"></i>&nbsp;FILTER</button>
+                <a href="{{ route('kelas-perkuliahan') }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></a>
+            </div>
         </div>
-    </div>
+    </form>
     @endif
     <div class="row">
+        
         <?php $index1 = 1 ?>
         @foreach ($ListTotalKelasPerkuliahanPerProdi as $prodi)
         @if ($IsFillter == true)
@@ -196,7 +211,7 @@
                                 <td>{{ $kelas->KodeMatkul }}</td>
                                 <td>{{ $kelas->Kelas }}</td>
                                 <td>{{ $kelas->JumlahSKS }}</td>
-                                <td>{{ $kelas->NamaDosen }}</td>
+                                <td>{{ $kelas->NamaDosen == '' || $kelas->NamaDosen == null ? '-' : $kelas->NamaDosen }}</td>
                             </tr>
                             <?php $no++; ?>
                             @endforeach

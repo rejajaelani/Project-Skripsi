@@ -130,7 +130,7 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <div class="wrapper-left">
-                                    <h4>Total Mahasiswa Per-Fakultas</h4>
+                                    <h4>Total Mahasiswa Per-Tahun</h4>
                                     <p class="p-0 m-0 mt-1">Mahasiswa Aktif, Mahasiswa Non Aktif, dan Total Mahasiswa</p>
                                 </div>
                                 <div class="wrapper-right">

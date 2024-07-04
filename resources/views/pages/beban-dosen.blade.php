@@ -81,14 +81,33 @@
         </div>
     </form>
     @else
-    <div class="row mb-3">
-        <div class="col-3">
-            <select name="" id="" class="form-select form-select-sm" disabled>
-                <option value="{{ $SelectedAkses }}" style="display: none" selected>{{ $SelectedAkses }}
-                </option>
-            </select>
+    <form action="{{ route('beban-dosen') }}" method="GET" class="mb-3" id="form-select-filter">
+        <div class="row">
+            <div class="col-3">
+                <select name="akses" id="akses" class="form-select form-select-sm">
+                    @foreach ($ListProdi as $prodi)
+                    <option value="{{ $prodi->id_prodi }}" {{ $SelectedAkses == $prodi->id_prodi ? 'selected' : '' }}>
+                        {{ $prodi->nama_program_studi }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-2">
+                <select name="semester" id="semester" class="form-select form-select-sm">
+                    @for ($year = 2023; $year >= 2015; $year--)
+                    <option value="{{ $year }}2" {{ $SelectedSemester == $year . '2' ? 'selected' : '' }}>{{ $year }} (Genap)
+                    </option>
+                    <option value="{{ $year }}1" {{ $SelectedSemester == $year . '1' ? 'selected' : '' }}>{{ $year }} (Ganjil)
+                    </option>
+                    @endfor
+                </select>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-send-fill"></i>&nbsp;FILTER</button>
+                <a href="{{ route('beban-dosen') }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></a>
+            </div>
         </div>
-    </div>
+    </form>
     @endif
     <div class="row">
         <div class="col-3 col-lg-4 col-md-6">
