@@ -27,21 +27,21 @@ class DataVisualisasiController extends Controller
             if ($hak_akses_selected == "Admin" || $hak_akses_selected == "Rektor") {
                 $hakAkses = "";
             } else if ($hak_akses_selected == "Teknologi dan Informatika") {
-                $hakAkses = "WHERE nama_program_studi IN ('S1 Teknik Informatika', 'S1 Rekayasa Sistem Komputer', 'S1 Sistem Komputer')";
+                $hakAkses = "WHERE nama_program_studi IN ('S1 Teknik Informatika', 'S1 Desain Komunikasi Visual', 'S1 Bisnis Digital')";
             } else if ($hak_akses_selected == "Bisnis dan Desain Kreatif") {
-                $hakAkses = "WHERE nama_program_studi IN ('S1 Bisnis Digital', 'S1 Desain Komunikasi Visual')";
+                $hakAkses = "WHERE nama_program_studi IN ('S1 Sistem Komputer', 'S1 Rekayasa Sistem Komputer')";
             } else {
                 $hakAkses = "WHERE nama_program_studi = 'S1 " . $hak_akses_selected . "'";
             }
         } elseif ($user->hak_akses == "Teknologi dan Informatika") {
             if ($hak_akses_selected == "Teknologi dan Informatika") {
-                $hakAkses = "WHERE nama_program_studi IN ('S1 Teknik Informatika', 'S1 Rekayasa Sistem Komputer', 'S1 Sistem Komputer')";
+                $hakAkses = "WHERE nama_program_studi IN ('S1 Teknik Informatika', 'S1 Desain Komunikasi Visual', 'S1 Bisnis Digital')";
             } else {
                 $hakAkses = "WHERE nama_program_studi = 'S1 " . $hak_akses_selected . "'";
             }
         } elseif ($user->hak_akses == "Bisnis dan Desain Kreatif") {
             if ($hak_akses_selected == "Bisnis dan Desain Kreatif") {
-                $hakAkses = "WHERE nama_program_studi IN ('S1 Bisnis Digital', 'S1 Desain Komunikasi Visual')";
+                $hakAkses = "WHERE nama_program_studi IN ('S1 Sistem Komputer', 'S1 Rekayasa Sistem Komputer')";
             } else {
                 $hakAkses = "WHERE nama_program_studi = 'S1 " . $hak_akses_selected . "'";
             }
@@ -174,34 +174,73 @@ class DataVisualisasiController extends Controller
         ]);
     }
 
+    public function GetProdiFakultas($fakultas)
+    {
+        $prodiFakultas = [
+            'Teknologi dan Informatika' => [
+                'whereFakultasTrue' => "('6c96efad-bc4f-4d66-8560-520ddd0846d7', '3785d1be-fd9a-4db6-9821-a84b8c25e7fe', '864c9a48-2cfc-4160-b1ab-8f7d3eb74e9e')"
+            ],
+            'Bisnis dan Desain Kreatif' => [
+                'whereFakultasTrue' => "('bb3b0c67-17ca-4544-ad00-2b5009e416d6', '8a0bd71c-17ba-4d71-bb40-ad63bd291191')"
+            ],
+        ];
+
+        if (isset($prodiFakultas[$fakultas])) {
+            return (object) $prodiFakultas[$fakultas];
+        }
+        return null;
+    }
+
     public function Visualisasi_KelasPerkuliahan(Request $request)
     {
         $user = $this->getUserActive();
         $hak_akses_selected = $request->akses ?? $user->hak_akses;
         $semester_selected = $request->semester ?? 20231;
 
-        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
-            $hak_akses_selected = 'All Data';
-        } else {
-            if ($request->akses == "") {
-                $hak_akses_selected = DB::table('tbusers as us')
-                ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
-                ->where('us.id', $user->id)
-                ->value('pr.id_prodi'); 
-            } else {
-                $hak_akses_selected = $request->akses;
-            }
-        }
+        $fakultas = $this->GetProdiFakultas($hak_akses_selected);
 
         $whereProdi = "";
 
-        if ($hak_akses_selected != "" && $hak_akses_selected != "All Data") {
-            if ($user->hak_akses == "Admin" || $user->hak_akses == "Rektor") {
-                $whereProdi = "";
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+            $whereProdi = "";
+        } else {
+            if ($request->akses == "") {
+                //var_dump($hak_akses_selected);
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                    //var_dump($whereProdi).die();
+                } else {
+                    $hak_akses_selected = DB::table('tbusers as us')
+                    ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
+                    ->where('us.id', $user->id)
+                    ->value('pr.id_prodi'); 
+                    $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                    //var_dump("Masuk 1").die();
+                }
             } else {
-                $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                    //var_dump($whereProdi).die();
+                } else {
+                    $hak_akses_selected = $request->akses;
+                    $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                    //var_dump("Masuk 1").die();
+                }
+                //var_dump("Masuk 2").die();
             }
         }
+
+
+        // if ($hak_akses_selected != "" && $hak_akses_selected != "All Data") {
+        //     if ($user->hak_akses == "Admin" || $user->hak_akses == "Rektor") {
+        //         $whereProdi = "";
+        //     } else {
+        //         $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+        //     }
+        // }
 
         $ListProdi = DB::select("SELECT * FROM tbgetprodi {$whereProdi} ORDER BY nama_program_studi ASC");
         $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
@@ -251,16 +290,21 @@ class DataVisualisasiController extends Controller
             FROM tbgetlistkelaskuliah 
             WHERE id_semester = ? AND nama_dosen IS NULL";
 
-        if ($hak_akses_selected !== 'All Data') {
+        if ($hak_akses_selected !== 'All Data' && $hak_akses_selected !== 'All Data Fakultas') {
             $queryTotalKelasPerkuliahan .= " AND id_prodi = ?";
             $queryTotalKelasPerkuliahanNULL .= " AND id_prodi = ?";
             $queryListKelasPerkuliahan .= " AND id_prodi = ?";
             $queryListKelasPerkuliahanNULL .= " AND id_prodi = ?";
+        } elseif ($hak_akses_selected === 'All Data Fakultas') {
+            $queryTotalKelasPerkuliahan .= " AND id_prodi IN {$fakultas->whereFakultasTrue}";
+            $queryTotalKelasPerkuliahanNULL .= " AND id_prodi IN {$fakultas->whereFakultasTrue}";
+            $queryListKelasPerkuliahan .= " AND id_prodi IN {$fakultas->whereFakultasTrue}";
+            $queryListKelasPerkuliahanNULL .= " AND id_prodi IN {$fakultas->whereFakultasTrue}";
         }
 
         $queryListKelasPerkuliahanNULL .= " ORDER BY nama_mata_kuliah ASC";
 
-        if ($hak_akses_selected !== 'All Data') {
+        if ($hak_akses_selected !== 'All Data' && $hak_akses_selected !== 'All Data Fakultas') {
             $TotalKelasPerkuliahan = DB::select($queryTotalKelasPerkuliahan, [$semester_selected, $hak_akses_selected]);
             $TotalKelasPerkuliahanNULL = DB::select($queryTotalKelasPerkuliahanNULL, [$semester_selected, $hak_akses_selected]);
             $ListKelasPerkuliahan = DB::select($queryListKelasPerkuliahan, [$semester_selected, $hak_akses_selected]);
@@ -294,7 +338,7 @@ class DataVisualisasiController extends Controller
             'HakAkses' => $user->hak_akses,
             'SelectedAkses' => $hak_akses_selected,
             'SelectedSemester' => $semester_selected,
-            'IsFillter' => $request->akses == '' && $hak_akses_selected == 'All Data' || $request->akses == 'All Data' && $hak_akses_selected == 'All Data' ? false : true,
+            'IsFillter' => $request->akses == '' && $hak_akses_selected == 'All Data' || $request->akses == 'All Data' && $user->hak_akses == 'All Data' || $request->akses == '' && $hak_akses_selected == 'All Data Fakultas' || $request->akses == 'All Data Fakultas' && $user->hak_akses == 'All Data Fakultas' ? false : true,
             'ListProdi' => $ListProdi,
             'ListFakultas' => $ListFakultas,
             'TotalKelasPerkuliahan' => $TotalKelasPerkuliahan,
@@ -312,28 +356,41 @@ class DataVisualisasiController extends Controller
         $semester_selected = $request->semester ?? 20231;
         $ListJenisKeluar = DB::select('SELECT * FROM tbgetjeniskeluar ORDER BY id_jenis_keluar ASC');
 
-        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
-            $hak_akses_selected = 'All Data';
-        } else {
-            if ($request->akses == "") {
-                $hak_akses_selected = DB::table('tbusers as us')
-                ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
-                ->where('us.id', $user->id)
-                ->value('pr.id_prodi'); 
-            } else {
-                $hak_akses_selected = $request->akses;
-            }
-        }
+        $fakultas = $this->GetProdiFakultas($user->hak_akses);
 
         $whereProdi = "";
 
-        if ($hak_akses_selected != "" && $hak_akses_selected != "All Data") {
-            if ($user->hak_akses == "Admin" || $user->hak_akses == "Rektor") {
-                $whereProdi = "";
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+            $whereProdi = "";
+        } else {
+            if ($request->akses == "") {
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = DB::table('tbusers as us')
+                    ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
+                    ->where('us.id', $user->id)
+                    ->value('pr.id_prodi'); 
+                    $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                }
             } else {
-                $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = $request->akses;
+                    if ($user->hak_akses == "Teknologi dan Informatika" || $user->hak_akses == "Bisnis dan Desain Kreatif") {
+                        $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                    } else {
+                        $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                    }
+                }
             }
         }
+
+        //var_dump($whereProdi).die();
 
         $ListProdi = DB::select("SELECT * FROM tbgetprodi {$whereProdi} ORDER BY nama_program_studi ASC");
         $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
@@ -343,10 +400,16 @@ class DataVisualisasiController extends Controller
 
         $whereProdiSelected = "";
 
-        if ($request->akses != "" && $request->akses != "All Data") {
+        if ($request->akses != "" && $request->akses != "All Data" && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
-        } else if ($hak_akses_selected != 'All Data') {
+            //var_dump("MASUK 1").die();
+        } else if ($hak_akses_selected != 'All Data' && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelected = "AND id_prodi = '{$hak_akses_selected}'";
+            //var_dump("MASUK 2").die();
+        } else if ($hak_akses_selected == 'All Data Fakultas') {
+            $whereProdiSelected = "AND id_prodi IN {$fakultas->whereFakultasTrue}";
+            //var_dump($whereProdiSelected);
+            //var_dump("MASUK 3").die();
         }
 
         foreach ($ListJenisKeluar as $jenis) {
@@ -389,7 +452,7 @@ class DataVisualisasiController extends Controller
             'HakAkses' => $user->hak_akses,
             'SelectedAkses' => $hak_akses_selected,
             'SelectedSemester' => $semester_selected,
-            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'IsFillter' => $request->akses == '' && $hak_akses_selected == 'All Data' || $request->akses == 'All Data' && $user->hak_akses == 'All Data' || $request->akses == '' && $hak_akses_selected == 'All Data Fakultas' || $request->akses == 'All Data Fakultas' && $user->hak_akses == 'All Data Fakultas' ? false : true,
             'ListProdi' => $ListProdi,
             'ListFakultas' => $ListFakultas,
             'ListJenisKeluar' => $ListJenisKeluar,
@@ -404,26 +467,37 @@ class DataVisualisasiController extends Controller
         $semester_selected = $request->semester ?? 20231;
         $ListStatusMhs = DB::select('SELECT * FROM tbgetstatusmahasiswa');
 
-        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
-            $hak_akses_selected = 'All Data';
-        } else {
-            if ($request->akses == "") {
-                $hak_akses_selected = DB::table('tbusers as us')
-                ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
-                ->where('us.id', $user->id)
-                ->value('pr.id_prodi'); 
-            } else {
-                $hak_akses_selected = $request->akses;
-            }
-        }
+        $fakultas = $this->GetProdiFakultas($user->hak_akses);
 
         $whereProdi = "";
 
-        if ($hak_akses_selected != "" && $hak_akses_selected != "All Data") {
-            if ($user->hak_akses == "Admin" || $user->hak_akses == "Rektor") {
-                $whereProdi = "";
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+            $whereProdi = "";
+        } else {
+            if ($request->akses == "") {
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = DB::table('tbusers as us')
+                    ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
+                    ->where('us.id', $user->id)
+                    ->value('pr.id_prodi'); 
+                    $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                }
             } else {
-                $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = $request->akses;
+                    if ($user->hak_akses == "Teknologi dan Informatika" || $user->hak_akses == "Bisnis dan Desain Kreatif") {
+                        $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                    } else {
+                        $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                    }
+                }
             }
         }
 
@@ -436,13 +510,15 @@ class DataVisualisasiController extends Controller
         $whereProdiSelected = "";
         $whereProdiSelectedAKM = "";
 
-
-        if ($request->akses != "" && $request->akses != "All Data") {
+        if ($request->akses != "" && $request->akses != "All Data" && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
             $whereProdiSelectedAKM = "AND akm.id_prodi = '{$request->akses}'";
-        } else if ($hak_akses_selected != 'All Data') {
+        } else if ($hak_akses_selected != 'All Data' && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelected = "AND id_prodi = '{$hak_akses_selected}'";
             $whereProdiSelectedAKM = "AND akm.id_prodi = '{$hak_akses_selected}'";
+        } else if ($hak_akses_selected == 'All Data Fakultas') {
+            $whereProdiSelected = "AND id_prodi IN {$fakultas->whereFakultasTrue}";
+            $whereProdiSelectedAKM = "AND akm.id_prodi IN {$fakultas->whereFakultasTrue}";
         }
 
         $TotalMahasiswaAKM = DB::select(
@@ -564,7 +640,7 @@ class DataVisualisasiController extends Controller
             'HakAkses' => $user->hak_akses,
             'SelectedAkses' => $hak_akses_selected,
             'SelectedSemester' => $semester_selected,
-            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'IsFillter' => $request->akses == '' && $hak_akses_selected == 'All Data' || $request->akses == 'All Data' && $user->hak_akses == 'All Data' || $request->akses == '' && $hak_akses_selected == 'All Data Fakultas' || $request->akses == 'All Data Fakultas' && $user->hak_akses == 'All Data Fakultas' ? false : true,
             'ListProdi' => $ListProdi,
             'ListFakultas' => $ListFakultas,
             'ListMahasiswaAKM' => $ListMahasiswaAKM,
@@ -579,26 +655,37 @@ class DataVisualisasiController extends Controller
         $hak_akses_selected = $request->akses ?? $user->hak_akses;
         $semester_selected = $request->semester ?? 20231;
 
-        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
-            $hak_akses_selected = 'All Data';
-        } else {
-            if ($request->akses == "") {
-                $hak_akses_selected = DB::table('tbusers as us')
-                ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
-                ->where('us.id', $user->id)
-                ->value('pr.id_prodi'); 
-            } else {
-                $hak_akses_selected = $request->akses;
-            }
-        }
+        $fakultas = $this->GetProdiFakultas($user->hak_akses);
 
         $whereProdi = "";
 
-        if ($hak_akses_selected != "" && $hak_akses_selected != "All Data") {
-            if ($user->hak_akses == "Admin" || $user->hak_akses == "Rektor") {
-                $whereProdi = "";
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+            $whereProdi = "";
+        } else {
+            if ($request->akses == "") {
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = DB::table('tbusers as us')
+                    ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
+                    ->where('us.id', $user->id)
+                    ->value('pr.id_prodi'); 
+                    $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                }
             } else {
-                $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = $request->akses;
+                    if ($user->hak_akses == "Teknologi dan Informatika" || $user->hak_akses == "Bisnis dan Desain Kreatif") {
+                        $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                    } else {
+                        $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                    }
+                }
             }
         }
 
@@ -609,15 +696,18 @@ class DataVisualisasiController extends Controller
         $whereProdiSelectedLM = "";
         $whereProdiSelectedKR = "";
 
-
-        if ($request->akses != "" && $request->akses != "All Data") {
+        if ($request->akses != "" && $request->akses != "All Data" && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelectedAKM = "AND akm.id_prodi = '{$request->akses}'";
             $whereProdiSelectedLM = "AND lm.id_prodi = '{$request->akses}'";
             $whereProdiSelectedKR = "AND kr.id_prodi = '{$request->akses}'";
-        } else if ($hak_akses_selected != 'All Data') {
+        } else if ($hak_akses_selected != 'All Data' && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelectedAKM = "AND akm.id_prodi = '{$hak_akses_selected}'";
             $whereProdiSelectedLM = "AND lm.id_prodi = '{$hak_akses_selected}'";
             $whereProdiSelectedKR = "AND kr.id_prodi = '{$hak_akses_selected}'";
+        } else if ($hak_akses_selected == 'All Data Fakultas') {
+            $whereProdiSelectedAKM = "AND akm.id_prodi IN {$fakultas->whereFakultasTrue}";
+            $whereProdiSelectedLM = "AND lm.id_prodi IN {$fakultas->whereFakultasTrue}";
+            $whereProdiSelectedKR = "AND kr.id_prodi IN {$fakultas->whereFakultasTrue}";
         }
 
         $TotalMahasiswaAktif = DB::select("SELECT 
@@ -840,7 +930,7 @@ class DataVisualisasiController extends Controller
             'HakAkses' => $user->hak_akses,
             'SelectedAkses' => $hak_akses_selected,
             'SelectedSemester' => $semester_selected,
-            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'IsFillter' => $request->akses == '' && $hak_akses_selected == 'All Data' || $request->akses == 'All Data' && $user->hak_akses == 'All Data' || $request->akses == '' && $hak_akses_selected == 'All Data Fakultas' || $request->akses == 'All Data Fakultas' && $user->hak_akses == 'All Data Fakultas' ? false : true,
             'ListProdi' => $ListProdi,
             'ListFakultas' => $ListFakultas,
             'TotalMahasiswaAktif' => $TotalMahasiswaAktif,
@@ -862,26 +952,37 @@ class DataVisualisasiController extends Controller
         $semester_selected = $request->semester ?? 20231;
         $ListJenisAktivitasMahasiswa = DB::select('SELECT * FROM tbgetjenisaktivitasmahasiswa ORDER BY id_jenis_aktivitas_mahasiswa ASC');
 
-        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
-            $hak_akses_selected = 'All Data';
-        } else {
-            if ($request->akses == "") {
-                $hak_akses_selected = DB::table('tbusers as us')
-                ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
-                ->where('us.id', $user->id)
-                ->value('pr.id_prodi'); 
-            } else {
-                $hak_akses_selected = $request->akses;
-            }
-        }
+        $fakultas = $this->GetProdiFakultas($user->hak_akses);
 
         $whereProdi = "";
 
-        if ($hak_akses_selected != "" && $hak_akses_selected != "All Data") {
-            if ($user->hak_akses == "Admin" || $user->hak_akses == "Rektor") {
-                $whereProdi = "";
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+            $whereProdi = "";
+        } else {
+            if ($request->akses == "") {
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = DB::table('tbusers as us')
+                    ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
+                    ->where('us.id', $user->id)
+                    ->value('pr.id_prodi'); 
+                    $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                }
             } else {
-                $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = $request->akses;
+                    if ($user->hak_akses == "Teknologi dan Informatika" || $user->hak_akses == "Bisnis dan Desain Kreatif") {
+                        $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                    } else {
+                        $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                    }
+                }
             }
         }
 
@@ -893,10 +994,12 @@ class DataVisualisasiController extends Controller
 
         $whereProdiSelected = "";
 
-        if ($request->akses != "" && $request->akses != "All Data") {
+        if ($request->akses != "" && $request->akses != "All Data" && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
-        } else if ($hak_akses_selected != 'All Data') {
+        } else if ($hak_akses_selected != 'All Data' && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelected = "AND id_prodi = '{$hak_akses_selected}'";
+        } else if ($hak_akses_selected == 'All Data Fakultas') {
+            $whereProdiSelected = "AND id_prodi IN {$fakultas->whereFakultasTrue}";
         }
 
         foreach ($ListJenisAktivitasMahasiswa as $jenis) {
@@ -942,7 +1045,7 @@ class DataVisualisasiController extends Controller
             'HakAkses' => $user->hak_akses,
             'SelectedAkses' => $hak_akses_selected,
             'SelectedSemester' => $semester_selected,
-            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'IsFillter' => $request->akses == '' && $hak_akses_selected == 'All Data' || $request->akses == 'All Data' && $user->hak_akses == 'All Data' || $request->akses == '' && $hak_akses_selected == 'All Data Fakultas' || $request->akses == 'All Data Fakultas' && $user->hak_akses == 'All Data Fakultas' ? false : true,
             'ListProdi' => $ListProdi,
             'ListFakultas' => $ListFakultas,
             'ListJenisAktivitasMahasiswa' => $ListJenisAktivitasMahasiswa,
@@ -957,28 +1060,41 @@ class DataVisualisasiController extends Controller
         $hak_akses_selected = $request->akses ?? $user->hak_akses;
         $semester_selected = $request->semester ?? 20231;
         
-        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
-            $hak_akses_selected = 'All Data';
-        } else {
-            if ($request->akses == "") {
-                $hak_akses_selected = DB::table('tbusers as us')
-                ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
-                ->where('us.id', $user->id)
-                ->value('pr.id_prodi'); 
-            } else {
-                $hak_akses_selected = $request->akses;
-            }
-        }
+        $fakultas = $this->GetProdiFakultas($user->hak_akses);
 
         $whereProdi = "";
 
-        if ($hak_akses_selected != "" && $hak_akses_selected != "All Data") {
-            if ($user->hak_akses == "Admin" || $user->hak_akses == "Rektor") {
-                $whereProdi = "";
+        if ($hak_akses_selected == 'Admin' || $hak_akses_selected == 'Rektor') {
+            $hak_akses_selected = 'All Data';
+            $whereProdi = "";
+        } else {
+            if ($request->akses == "") {
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = DB::table('tbusers as us')
+                    ->leftJoin('tbgetprodi as pr', 'us.hak_akses', '=', 'pr.nama_program_studi')
+                    ->where('us.id', $user->id)
+                    ->value('pr.id_prodi'); 
+                    $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                }
             } else {
-                $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                if ($hak_akses_selected == "Teknologi dan Informatika" || $hak_akses_selected == "Bisnis dan Desain Kreatif") {
+                    $hak_akses_selected = "All Data Fakultas";
+                    $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                } else {
+                    $hak_akses_selected = $request->akses;
+                    if ($user->hak_akses == "Teknologi dan Informatika" || $user->hak_akses == "Bisnis dan Desain Kreatif") {
+                        $whereProdi = "WHERE id_prodi IN {$fakultas->whereFakultasTrue}";
+                    } else {
+                        $whereProdi = "WHERE id_prodi = '{$hak_akses_selected}'";
+                    }
+                }
             }
         }
+        //var_dump($hak_akses_selected) . die();
+
 
         $ListProdi = DB::select("SELECT * FROM tbgetprodi {$whereProdi} ORDER BY nama_program_studi ASC");
         $ListFakultas = DB::select('SELECT * FROM tbgetfakultas');
@@ -987,15 +1103,21 @@ class DataVisualisasiController extends Controller
         $whereProdiSelectedDPK = "";
         $whereProdiSelectedDPK2 = "";
 
-        if ($request->akses != "" && $request->akses != "All Data") {
+        if ($request->akses != "" && $request->akses != "All Data" && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelected = "AND id_prodi = '{$request->akses}'";
             $whereProdiSelectedDPK = "AND dpk.id_prodi = '{$request->akses}'";
             $whereProdiSelectedDPK2 = "AND dpk2.id_prodi = '{$request->akses}'";
-        } else if ($hak_akses_selected != 'All Data') {
+        } else if ($hak_akses_selected != 'All Data' && $hak_akses_selected != 'All Data Fakultas') {
             $whereProdiSelected = "AND id_prodi = '{$hak_akses_selected}'";
             $whereProdiSelectedDPK = "AND dpk.id_prodi = '{$hak_akses_selected}'";
             $whereProdiSelectedDPK2 = "AND dpk2.id_prodi = '{$hak_akses_selected}'";
+        } else if ($hak_akses_selected == "All Data Fakultas") {
+            $whereProdiSelected = "AND id_prodi IN {$fakultas->whereFakultasTrue}";
+            $whereProdiSelectedDPK = "AND dpk.id_prodi IN {$fakultas->whereFakultasTrue}";
+            $whereProdiSelectedDPK2 = "AND dpk2.id_prodi IN {$fakultas->whereFakultasTrue}";
         }
+
+        //var_dump($whereProdiSelected) . die();
 
         $TotalDosenMengajar = DB::select("SELECT COUNT(ld.id) AS Total FROM tbgetlistdosen ld WHERE ld.id_dosen IN (SELECT dpk.id_dosen FROM tbgetdosenpengajarkelaskuliah dpk WHERE id_semester = ? {$whereProdiSelected} GROUP BY dpk.id_dosen)", [$semester_selected]);
 
@@ -1096,7 +1218,7 @@ class DataVisualisasiController extends Controller
             'HakAkses' => $user->hak_akses,
             'SelectedAkses' => $hak_akses_selected,
             'SelectedSemester' => $semester_selected,
-            'IsFillter' => $request->akses == '' || $request->akses == 'All Data' ? false : true,
+            'IsFillter' => $request->akses == '' && $hak_akses_selected == 'All Data' || $request->akses == 'All Data' && $user->hak_akses == 'All Data' || $request->akses == '' && $hak_akses_selected == 'All Data Fakultas' || $request->akses == 'All Data Fakultas' && $user->hak_akses == 'All Data Fakultas' ? false : true,
             'ListProdi' => $ListProdi,
             'ListFakultas' => $ListFakultas,
             'TotalDosenMengajar' => $TotalDosenMengajar,

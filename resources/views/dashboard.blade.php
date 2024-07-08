@@ -57,19 +57,16 @@
                             <select name="select_data" id="select_data" class="form-select form-select-sm">
                                 @if ($UserAkses == 'Admin' || $UserAkses == 'Rektor')
                                     <option value="" style="display: none;"></option>
-                                    <option value="" disabled>~Universitas~</option>
                                     <option value="Rektor" {{ $HakAkses == 'Rektor' ? 'selected' : '' }}
                                         {{ $HakAkses != 'Rektor' ? 'style=display:none;' : '' }}>All Data</option>
                                     <option value="Admin" {{ $HakAkses == 'Admin' ? 'selected' : '' }}
                                         {{ $HakAkses != 'Admin' ? 'style=display:none;' : '' }}>All Data</option>
-                                    <option value="" disabled>~Fakultas~</option>
                                     @foreach ($ListFakultas as $fakultas)
                                         <option value="{{ $fakultas->nama_fakultas }}"
                                             {{ $HakAkses == $fakultas->nama_fakultas ? 'selected' : '' }}>
                                             {{ $fakultas->nama_fakultas }}
                                         </option>
                                     @endforeach
-                                    <option value="" disabled>~Prodi~</option>
                                     @foreach ($ListProdi as $prodi)
                                         <option value="{{ $prodi->nama_program_studi }}"
                                             {{ $HakAkses == $prodi->nama_program_studi ? 'selected' : '' }}>
@@ -77,30 +74,24 @@
                                         </option>
                                     @endforeach
                                 @elseif ($UserAkses == 'Teknologi dan Informatika')
-                                    <option value="" disabled>~Fakultas~</option>
                                     <option value="Teknologi dan Informatika"
-                                        {{ $HakAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>Teknologi dan
-                                        Informatika</option>
-                                    <option value="" disabled>~Prodi~</option>
-                                    <option value="Teknik Informatika"
-                                        {{ $HakAkses == 'Teknik Informatika' ? 'selected' : '' }}>Teknik Informatika
-                                    </option>
-                                    <option value="Rekayasa Sistem Komputer"
-                                        {{ $HakAkses == 'Rekayasa Sistem Komputer' ? 'selected' : '' }}>Rekayasa Sistem
-                                        Komputer</option>
-                                    <option value="Sistem Komputer" {{ $HakAkses == 'Sistem Komputer' ? 'selected' : '' }}>
-                                        Sistem Komputer</option>
-                                @elseif ($UserAkses == 'Bisnis dan Desain Kreatif')
-                                    <option value="" disabled>~Fakultas~</option>
-                                    <option value="Bisnis dan Desain Kreatif"
-                                        {{ $HakAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>Bisnis dan Desain
-                                        Kreatif</option>
-                                    <option value="" disabled>~Prodi~</option>
+                                        {{ $HakAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>All Data Fakultas</option>
                                     <option value="Bisnis Digital" {{ $HakAkses == 'Bisnis Digital' ? 'selected' : '' }}>
                                         Bisnis Digital</option>
                                     <option value="Desain Komunikasi Visual"
                                         {{ $HakAkses == 'Desain Komunikasi Visual' ? 'selected' : '' }}>Desain Komunikasi
                                         Visual</option>
+                                    <option value="Teknik Informatika"
+                                        {{ $HakAkses == 'Teknik Informatika' ? 'selected' : '' }}>Teknik Informatika
+                                    </option>
+                                @elseif ($UserAkses == 'Bisnis dan Desain Kreatif')
+                                    <option value="Bisnis dan Desain Kreatif"
+                                        {{ $HakAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>All Data Fakultas</option>
+                                    <option value="Rekayasa Sistem Komputer"
+                                        {{ $HakAkses == 'Rekayasa Sistem Komputer' ? 'selected' : '' }}>Rekayasa Sistem
+                                        Komputer</option>
+                                    <option value="Sistem Komputer" {{ $HakAkses == 'Sistem Komputer' ? 'selected' : '' }}>
+                                        Sistem Komputer</option>
                                 @endif
                             </select>
                         </div>

@@ -19,9 +19,7 @@
 <div class="page-content">
     @if (
     $HakAkses == 'Admin' ||
-    $HakAkses == 'Rektor' ||
-    $HakAkses == 'Teknologi dan Informatika' ||
-    $HakAkses == 'Bisnis dan Desain Kreatif')
+    $HakAkses == 'Rektor')
     <form action="{{ route('kelas-perkuliahan') }}" method="GET" class="mb-3" id="form-select-filter">
         <div class="row">
             <div class="col-3">
@@ -35,27 +33,7 @@
                         {{ $prodi->nama_program_studi }}
                     </option>
                     @endforeach
-                    @elseif ($HakAkses == 'Teknologi dan Informatika')
-                    <option value="Teknologi dan Informatika" {{ $SelectedAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>Teknologi dan
-                        Informatika</option>
-                    <option value="6c96efad-bc4f-4d66-8560-520ddd0846d7" {{ $SelectedAkses == '6c96efad-bc4f-4d66-8560-520ddd0846d7' ? 'selected' : '' }}>Teknik
-                        Informatika
-                    </option>
-                    <option value="8a0bd71c-17ba-4d71-bb40-ad63bd291191" {{ $SelectedAkses == '8a0bd71c-17ba-4d71-bb40-ad63bd291191' ? 'selected' : '' }}>
-                        Rekayasa Sistem
-                        Komputer</option>
-                    <option value="bb3b0c67-17ca-4544-ad00-2b5009e416d6" {{ $SelectedAkses == 'bb3b0c67-17ca-4544-ad00-2b5009e416d6' ? 'selected' : '' }}>
-                        Sistem Komputer</option>
-                    @elseif ($HakAkses == 'Bisnis dan Desain Kreatif')
-                    <option value="" disabled>~Fakultas~</option>
-                    <option value="Bisnis dan Desain Kreatif" {{ $SelectedAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>Bisnis dan Desain
-                        Kreatif</option>
-                    <option value="" disabled>~Prodi~</option>
-                    <option value="864c9a48-2cfc-4160-b1ab-8f7d3eb74e9e" {{ $SelectedAkses == '864c9a48-2cfc-4160-b1ab-8f7d3eb74e9e' ? 'selected' : '' }}>
-                        Bisnis Digital</option>
-                    <option value="3785d1be-fd9a-4db6-9821-a84b8c25e7fe" {{ $SelectedAkses == '3785d1be-fd9a-4db6-9821-a84b8c25e7fe' ? 'selected' : '' }}>Desain
-                        Komunikasi
-                        Visual</option>
+
                     @endif
                 </select>
             </div>
@@ -80,6 +58,11 @@
         <div class="row">
             <div class="col-3">
                 <select name="akses" id="akses" class="form-select form-select-sm">
+                    @if ($HakAkses == 'Teknologi dan Informatika')
+                    <option value="Teknologi dan Informatika" {{ $SelectedAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>All Data Fakultas</option>
+                    @elseif ($HakAkses == 'Bisnis dan Desain Kreatif')
+                    <option value="Bisnis dan Desain Kreatif" {{ $SelectedAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>All Data Fakultas</option>
+                    @endif
                     @foreach ($ListProdi as $prodi)
                     <option value="{{ $prodi->id_prodi }}" {{ $SelectedAkses == $prodi->id_prodi ? 'selected' : '' }}>
                         {{ $prodi->nama_program_studi }}

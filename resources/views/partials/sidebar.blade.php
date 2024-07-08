@@ -3,7 +3,7 @@
                 <div class="sidebar-header position-relative">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="logo logo-instiki-sidebar">
-                            <a href="index.html"><img src="{{ asset('images/Horizontal-Logo.png') }}" alt="Logo"
+                            <a href="{{ route('dashboard') }}"><img src="{{ asset('images/Horizontal-Logo.png') }}" alt="Logo"
                                     srcset=""></a>
                         </div>
                         <div class="theme-toggle d-flex gap-2  align-items-center mt-2">
