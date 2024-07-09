@@ -47,20 +47,20 @@
     <div class="page-content">
         <section class="row">
             @if (
-                $UserAkses == 'Admin' ||
-                    $UserAkses == 'Rektor' ||
-                    $UserAkses == 'Teknologi dan Informatika' ||
-                    $UserAkses == 'Bisnis dan Desain Kreatif')
+                $User->hak_akses == 'Admin' ||
+                    $User->hak_akses == 'Rektor' ||
+                    $User->hak_akses == 'Teknologi dan Informatika' ||
+                    $User->hak_akses == 'Bisnis dan Desain Kreatif')
                 <form action="{{ route('dashboard') }}" method="GET" class="mb-5" id="form-select-filter">
                     <div class="row">
                         <div class="col-3">
                             <select name="select_data" id="select_data" class="form-select form-select-sm">
-                                @if ($UserAkses == 'Admin' || $UserAkses == 'Rektor')
+                                @if ($User->hak_akses == 'Admin' || $User->hak_akses == 'Rektor')
                                     <option value="" style="display: none;"></option>
                                     <option value="Rektor" {{ $HakAkses == 'Rektor' ? 'selected' : '' }}
-                                        {{ $HakAkses != 'Rektor' ? 'style=display:none;' : '' }}>All Data</option>
+                                        {{ $User->hak_akses != 'Rektor' ? 'style=display:none;' : '' }}>All Data</option>
                                     <option value="Admin" {{ $HakAkses == 'Admin' ? 'selected' : '' }}
-                                        {{ $HakAkses != 'Admin' ? 'style=display:none;' : '' }}>All Data</option>
+                                        {{ $User->hak_akses != 'Admin' ? 'style=display:none;' : '' }}>All Data</option>
                                     @foreach ($ListFakultas as $fakultas)
                                         <option value="{{ $fakultas->nama_fakultas }}"
                                             {{ $HakAkses == $fakultas->nama_fakultas ? 'selected' : '' }}>
@@ -75,7 +75,8 @@
                                     @endforeach
                                 @elseif ($UserAkses == 'Teknologi dan Informatika')
                                     <option value="Teknologi dan Informatika"
-                                        {{ $HakAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>All Data Fakultas</option>
+                                        {{ $HakAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>All Data Fakultas
+                                    </option>
                                     <option value="Bisnis Digital" {{ $HakAkses == 'Bisnis Digital' ? 'selected' : '' }}>
                                         Bisnis Digital</option>
                                     <option value="Desain Komunikasi Visual"
@@ -86,7 +87,8 @@
                                     </option>
                                 @elseif ($UserAkses == 'Bisnis dan Desain Kreatif')
                                     <option value="Bisnis dan Desain Kreatif"
-                                        {{ $HakAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>All Data Fakultas</option>
+                                        {{ $HakAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>All Data Fakultas
+                                    </option>
                                     <option value="Rekayasa Sistem Komputer"
                                         {{ $HakAkses == 'Rekayasa Sistem Komputer' ? 'selected' : '' }}>Rekayasa Sistem
                                         Komputer</option>
@@ -121,7 +123,7 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <div class="wrapper-left">
-                                    <h4>Total Mahasiswa Per-Tahun</h4>
+                                    <h4>Total Mahasiswa Per-Semester</h4>
                                     <p class="p-0 m-0 mt-1">Mahasiswa Aktif, Mahasiswa Non Aktif, dan Total Mahasiswa</p>
                                 </div>
                                 <div class="wrapper-right">
@@ -186,7 +188,7 @@
                     <div class="col-8 col-xl-8">
                         <div class="card">
                             <div class="card-header">
-                                <h4 class="mb-0">Total Mahasiswa Per-Tahun</h4>
+                                <h4 class="mb-0">Total Mahasiswa Per-Semester</h4>
                                 <p class="p-0 m-0 mt-1">Mahasiswa Cuti</p>
                             </div>
                             <div class="card-body">

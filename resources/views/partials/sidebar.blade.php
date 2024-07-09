@@ -3,8 +3,8 @@
                 <div class="sidebar-header position-relative">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="logo logo-instiki-sidebar">
-                            <a href="{{ route('dashboard') }}"><img src="{{ asset('images/Horizontal-Logo.png') }}" alt="Logo"
-                                    srcset=""></a>
+                            <a href="{{ route('dashboard') }}"><img src="{{ asset('images/Horizontal-Logo.png') }}"
+                                    alt="Logo" srcset=""></a>
                         </div>
                         <div class="theme-toggle d-flex gap-2  align-items-center mt-2">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -94,7 +94,7 @@
                             </a>
                         </li>
 
-                        @if ($HakAkses == 'Admin' || $HakAkses == 'Rektor')
+                        @if ($User->hak_akses == 'Admin' || $User->hak_akses == 'Rektor')
                             <li class="sidebar-item {{ $pages_active == 'user' ? 'active' : '' }}">
                                 <a href="{{ route('user') }}" class='sidebar-link'>
                                     <i class="bi bi-person-lines-fill"></i>

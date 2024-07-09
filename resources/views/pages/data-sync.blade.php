@@ -209,13 +209,9 @@
 
                 //Sync Data Master List Get
                 var tableArray = [
-                    "GetProdi", "GetFakultas", "GetDetailKurikulum", "GetListKelasKuliah",
-                    "GetDetailKelasKuliah", "GetListPeriodePerkuliahan", "GetDetailPeriodePerkuliahan",
-                    "GetListDosen", "GetRekapJumlahDosen", "GetListPenugasanDosen",
-                    "GetRekapJumlahMahasiswa", "GetDataTerhapus", "GetListMataKuliah",
-                    "GetDetailMataKuliah", "GetBiodataMahasiswa",
-                    "GetPerhitunganSKS", "GetListPrestasiMahasiswa", "GetDosenPembimbing",
-                    "GetJenisAktivitasMahasiswa", "GetJenisKeluar", "GetStatusMahasiswa"
+                    "GetProdi", "GetFakultas", "GetListKelasKuliah", "GetListDosen",
+                    "GetRekapJumlahMahasiswa", "GetJenisAktivitasMahasiswa", "GetJenisKeluar",
+                    "GetStatusMahasiswa"
                 ];
 
                 var count = 0;
@@ -298,17 +294,12 @@
                 //Sync Data Semester List Get
                 var tableArray = [
                     //id_periode
-                    "GetListMahasiswa", "GetKRSMahasiswa", "GetRekapKRSMahasiswa",
-                    "GetRekapKHSMahasiswa", "GetAktivitasMengajarDosen", "GetRiwayatNilaiMahasiswa",
-                    "GetMahasiswaBimbinganDosen", "GetRekapIPSMahasiswa", "GetListBimbingMahasiswa",
-                    "GetDetailPerkuliahanMahasiswa",
-
+                    "GetListMahasiswa", "GetKRSMahasiswa", "GetAktivitasMengajarDosen",
                     //id_semester
-                    "GetListAktivitasMahasiswa", "GetAktivitasKuliahMahasiswa", "GetListKurikulum",
+                    "GetListAktivitasMahasiswa", "GetAktivitasKuliahMahasiswa",
                     "GetDosenPengajarKelasKuliah",
-
                     //id_periode_keluar
-                    "GetListMahasiswaLulusDO", "GetDetailMahasiswaLulusDO"
+                    "GetListMahasiswaLulusDO",
                 ];
 
                 var count = 0;
