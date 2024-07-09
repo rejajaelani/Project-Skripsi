@@ -13,7 +13,8 @@ class DataProcessController extends Controller
 {
     public function runWs($data)
     {
-        $url = "https://feeder.instiki.ac.id/ws/sandbox2.php";
+        $url = "https://feeder.instiki.ac.id/ws/live2.php";
+        //$url = "https://feeder.instiki.ac.id/ws/sandbox2.php";
         $ch = curl_init();
 
         if ($data) {
