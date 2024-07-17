@@ -17,95 +17,7 @@
         @endif
     </div>
     <div class="page-content">
-        @if ($HakAkses == 'Admin' || $HakAkses == 'Rektor')
-            <form action="{{ route('beban-dosen') }}" method="GET" class="mb-3" id="form-select-filter">
-                <div class="row">
-                    <div class="col-3">
-                        <select name="akses" id="akses" class="form-select form-select-sm">
-                            @if ($HakAkses == 'Admin' || $HakAkses == 'Rektor')
-                                <option value="" style="display: none;"></option>
-                                <option value="All Data" {{ $SelectedAkses == 'All Data' ? 'selected' : '' }}>All Data
-                                </option>
-                                <option value="Teknologi dan Informatika"
-                                    {{ $SelectedAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>Teknologi dan
-                                    Informatika
-                                </option>
-                                <option value="Bisnis dan Desain Kreatif"
-                                    {{ $SelectedAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>Bisnis dan Desain
-                                    Kreatif
-                                </option>
-                                @foreach ($ListProdi as $prodi)
-                                    <option value="{{ $prodi->id_prodi }}"
-                                        {{ $SelectedAkses == $prodi->id_prodi ? 'selected' : '' }}>
-                                        {{ $prodi->nama_program_studi }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-                    <div class="col-2">
-                        <select name="semester" id="semester" class="form-select form-select-sm">
-                            @for ($year = 2023; $year >= 2015; $year--)
-                                <option value="{{ $year }}2"
-                                    {{ $SelectedSemester == $year . '2' ? 'selected' : '' }}>{{ $year }} (Genap)
-                                </option>
-                                <option value="{{ $year }}1"
-                                    {{ $SelectedSemester == $year . '1' ? 'selected' : '' }}>{{ $year }} (Ganjil)
-                                </option>
-                            @endfor
-                        </select>
-                    </div>
-                    <div class="col">
-                        <button type="submit" class="btn btn-sm btn-outline-primary"><i
-                                class="bi bi-send-fill"></i>&nbsp;FILTER</button>
-                        <a href="{{ route('beban-dosen') }}" class="btn btn-sm btn-outline-secondary"><i
-                                class="bi bi-arrow-counterclockwise"></i></a>
-                    </div>
-                </div>
-            </form>
-        @else
-            <form action="{{ route('beban-dosen') }}" method="GET" class="mb-3" id="form-select-filter">
-                <div class="row">
-                    <div class="col-3">
-                        <select name="akses" id="akses" class="form-select form-select-sm">
-                            @if ($HakAkses == 'Teknologi dan Informatika')
-                                <option value="Teknologi dan Informatika"
-                                    {{ $SelectedAkses == 'Teknologi dan Informatika' ? 'selected' : '' }}>All Data Fakultas
-                                </option>
-                            @elseif ($HakAkses == 'Bisnis dan Desain Kreatif')
-                                <option value="Bisnis dan Desain Kreatif"
-                                    {{ $SelectedAkses == 'Bisnis dan Desain Kreatif' ? 'selected' : '' }}>All Data Fakultas
-                                </option>
-                            @endif
-                            @foreach ($ListProdi as $prodi)
-                                <option value="{{ $prodi->id_prodi }}"
-                                    {{ $SelectedAkses == $prodi->id_prodi ? 'selected' : '' }}>
-                                    {{ $prodi->nama_program_studi }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-2">
-                        <select name="semester" id="semester" class="form-select form-select-sm">
-                            @for ($year = 2023; $year >= 2015; $year--)
-                                <option value="{{ $year }}2"
-                                    {{ $SelectedSemester == $year . '2' ? 'selected' : '' }}>{{ $year }} (Genap)
-                                </option>
-                                <option value="{{ $year }}1"
-                                    {{ $SelectedSemester == $year . '1' ? 'selected' : '' }}>{{ $year }} (Ganjil)
-                                </option>
-                            @endfor
-                        </select>
-                    </div>
-                    <div class="col">
-                        <button type="submit" class="btn btn-sm btn-outline-primary"><i
-                                class="bi bi-send-fill"></i>&nbsp;FILTER</button>
-                        <a href="{{ route('beban-dosen') }}" class="btn btn-sm btn-outline-secondary"><i
-                                class="bi bi-arrow-counterclockwise"></i></a>
-                    </div>
-                </div>
-            </form>
-        @endif
+
         <div class="row">
             <div class="col-3 col-lg-4 col-md-6">
                 <div class="card mb-4">
@@ -116,7 +28,6 @@
                             </div>
                             <div>
                                 <h6 class="text-muted font-semibold">Total Dosen Mengajar</h6>
-                                <h6 class="font-extrabold mb-0">{{ $TotalDosenMengajar }}</h6>
                             </div>
                         </div>
                     </div>
@@ -135,7 +46,6 @@
                             </div>
                             <div>
                                 <h6 class="text-muted font-semibold">Total Dosen Tidak Mengajar</h6>
-                                <h6 class="font-extrabold mb-0">{{ $TotalDosenTidakMengajar }}</h6>
                             </div>
                         </div>
                     </div>
@@ -154,7 +64,7 @@
                             </div>
                             <div>
                                 <h6 class="text-muted font-semibold">Total Dosen</h6>
-                                <h6 class="font-extrabold mb-0">{{ $TotalDosen }}</h6>
+                                <h6 class="font-bold">{{ $TotalDosen }}</h6>
                             </div>
                         </div>
                     </div>
@@ -179,19 +89,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $no = 1; ?>
-                                @foreach ($ListDosen as $dosen)
-                                    <tr>
-                                        <td>{{ $no }}</td>
-                                        <td>{{ $dosen->nama_dosen }}</td>
-                                        <td>{{ $dosen->nidn }}</td>
-                                        <td>{{ $dosen->jenis_kelamin }}</td>
-                                        <td>{{ $dosen->nama_agama }}</td>
-                                        <td>{{ $dosen->nama_status_aktif }}</td>
-                                        <td>{{ $dosen->TotalSKS }}</td>
-                                    </tr>
-                                    <?php $no++; ?>
-                                @endforeach
+
                             </tbody>
                         </table>
                     </div>
@@ -222,19 +120,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $no = 1; ?>
-                            @foreach ($ListDosenMengajar as $dosen)
-                                <tr>
-                                    <td>{{ $no }}</td>
-                                    <td>{{ $dosen->nama_dosen }}</td>
-                                    <td>{{ $dosen->nidn }}</td>
-                                    <td>{{ $dosen->jenis_kelamin }}</td>
-                                    <td>{{ $dosen->nama_agama }}</td>
-                                    <td>{{ $dosen->nama_status_aktif }}</td>
-                                    <td>{{ $dosen->TotalSKS }}</td>
-                                </tr>
-                                <?php $no++; ?>
-                            @endforeach
+
                         </tbody>
                     </table>
                 </div>
@@ -263,18 +149,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $no = 1; ?>
-                            @foreach ($ListDosenTidakMengajar as $dosen)
-                                <tr>
-                                    <td>{{ $no }}</td>
-                                    <td>{{ $dosen->nama_dosen }}</td>
-                                    <td>{{ $dosen->nidn }}</td>
-                                    <td>{{ $dosen->jenis_kelamin }}</td>
-                                    <td>{{ $dosen->nama_agama }}</td>
-                                    <td>{{ $dosen->nama_status_aktif }}</td>
-                                </tr>
-                                <?php $no++; ?>
-                            @endforeach
+
                         </tbody>
                     </table>
                 </div>

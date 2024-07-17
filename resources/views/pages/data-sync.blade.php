@@ -210,7 +210,7 @@
                 //Sync Data Master List Get
                 var tableArray = [
                     "GetProdi", "GetFakultas", "GetListKelasKuliah", "GetListDosen",
-                    "GetRekapJumlahMahasiswa", "GetJenisAktivitasMahasiswa", "GetJenisKeluar",
+                    "GetRekapJumlahMahasiswa", "GetJenisAktivitasMahasiswa", "GetAktivitasMengajarDosen", "GetJenisKeluar",
                     "GetStatusMahasiswa"
                 ];
 

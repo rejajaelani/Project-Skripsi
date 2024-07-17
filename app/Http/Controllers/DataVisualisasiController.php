@@ -1120,7 +1120,7 @@ class DataVisualisasiController extends Controller
     }
 
 
-    public function Visualisasi_BebanDosen(Request $request)
+    public function Visualisasi_BebanDosenTEST(Request $request)
     {
         $user = $this->getUserActive();
         $hak_akses_selected = $request->akses ?? $user->hak_akses;
@@ -1297,6 +1297,24 @@ class DataVisualisasiController extends Controller
             'ListDosen' => $ListDosen,
             'ListDosenMengajar' => $ListDosenMengajar,
             'ListDosenTidakMengajar' => $ListDosenTidakMengajar,
+        ]);
+    }
+
+    public function Visualisasi_BebanDosen(Request $request)
+    {
+        $user = $this->getUserActive();
+        $hak_akses_selected = $request->akses ?? $user->hak_akses;
+        $semester_selected = $request->semester ?? 20231;
+
+        $TotalDosen = DB::table('tbgetlistdosen')->count('id');
+
+        return view('pages/beban-dosen', [
+            'User' => $user,
+            'pages_active' => 'beban-dosen',
+            'HakAkses' => $user->hak_akses,
+            'SelectedAkses' => $request->akses ?? $hak_akses_selected,
+            'SelectedSemester' => $semester_selected,
+            'TotalDosen' => $TotalDosen,
         ]);
     }
 }
